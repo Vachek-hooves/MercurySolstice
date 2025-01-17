@@ -8,7 +8,6 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import MainLayout from '../../components/Layout/MainLayout';
 import {launchImageLibrary} from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -68,7 +67,7 @@ const LogIn = ({navigation}) => {
   };
 
   return (
-    <LinearGradient colors={['#001B3B', '#001432']} style={styles.container}>
+    <MainLayout>
       <View style={styles.content}>
         <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
           <Image
@@ -90,18 +89,9 @@ const LogIn = ({navigation}) => {
           />
         </View>
 
-        {/* <TouchableOpacity onPress={handleSignIn}>
-          <LinearGradient
-            colors={['#FFDD56', '#FE9F50']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.button}>
-            <Text style={styles.buttonText}>Sign in</Text>
-          </LinearGradient>
-        </TouchableOpacity> */}
-        <CustomBtn onPress={handleSignIn} title={'Sign in'}/>
+        <CustomBtn onPress={handleSignIn} title={'Sign in'} />
       </View>
-    </LinearGradient>
+    </MainLayout>
   );
 };
 
@@ -155,24 +145,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FFD700',
   },
-//   button: {
-//     borderRadius: 30,
-//     width: 280,
-//     shadowColor: '#000000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 4,
-//     },
-//     shadowOpacity: 0.25,
-//     shadowRadius: 9.9,
-//     elevation: 8,
-//   },
-//   buttonText: {
-//     paddingHorizontal: 64,
-//     paddingVertical: 16,
-//     color: '#001432',
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//   },
 });

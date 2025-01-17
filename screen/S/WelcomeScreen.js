@@ -21,25 +21,23 @@ const WelcomeScreen = ({navigation}) => {
 
   return (
     <MainLayout>
-      {/* <LinearGradient colors={['#001B3B', '#001432']} style={styles.container}> */}
-        <View style={styles.content}>
-          <Image source={SUN} style={styles.sunImage} />
-          <Image source={LOGO} style={styles.logoImage} />
-          <View style={styles.progressContainer}>
-            <Animated.View
-              style={[
-                styles.progressBar,
-                {
-                  width: progressAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0%', '100%'],
-                  }),
-                },
-              ]}
-            />
-          </View>
+      <View style={styles.content}>
+        <Image source={SUN} style={styles.sunImage} />
+        <Image source={LOGO} style={styles.logoImage} />
+        <View style={styles.progressContainer}>
+          <Animated.View
+            style={[
+              styles.progressBar,
+              {
+                width: progressAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%'],
+                }),
+              },
+            ]}
+          />
         </View>
-      {/* </LinearGradient> */}
+      </View>
     </MainLayout>
   );
 };
@@ -47,9 +45,6 @@ const WelcomeScreen = ({navigation}) => {
 export default WelcomeScreen;
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  // },
   content: {
     flex: 1,
     justifyContent: 'center',
