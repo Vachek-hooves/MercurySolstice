@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  Animated,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {dailyAdvice} from '../../data/advice';
@@ -15,11 +16,33 @@ const Advice = () => {
   const [selectedAdvice, setSelectedAdvice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPositions, setButtonPositions] = useState({});
+  const [sunPosition, setSunPosition] = useState({});
 
   const timePeriods = ['morning', 'daytime', 'evening', 'night'];
 
-  // Generate new random positions when time period changes
+  // Update sun position based on time period
   useEffect(() => {
+    const positions = {
+      morning: {
+        left: '10%',
+        top: '80%',
+      },
+      daytime: {
+        left: '25%',
+        top: '50%',
+      },
+      evening: {
+        left: '40%',
+        top: '20%',
+      },
+      night: {
+        left: '75%',
+        top: '0%',
+      },
+    };
+    setSunPosition(positions[selectedPeriod]);
+
+    // Generate button positions (existing code)
     const newPositions = {};
     dailyAdvice[selectedPeriod].advices.forEach((advice, index) => {
       newPositions[advice.id] = {
@@ -83,9 +106,15 @@ const Advice = () => {
         </TouchableOpacity>
       ))}
 
-      <Image
+      <Animated.Image
         source={require('../../assets/ui/smallSun.png')}
-        style={styles.sunImage}
+        style={[
+          styles.sunImage,
+          {
+            left: sunPosition.left,
+            top: sunPosition.top,
+          },
+        ]}
       />
     </View>
   );
@@ -217,5 +246,16 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#001432',
     fontWeight: 'bold',
+  },
+  sunImage: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    transform: [
+      { translateX: -60 }, // Half of width
+      { translateY: -60 }, // Half of height
+    ],
+    // Add transition animation
+    transition: 'all 0.3s ease-in-out',
   },
 });
