@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
-import { useNavigation } from '@react-navigation/native'
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {useNavigation} from '@react-navigation/native';
 
-const CustomBtn = ({navTo,children,title}) => {
+const CustomBtn = ({navTo, children, title, onPress}) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity onPress={() => navigation.navigate(navTo)}>
+    <TouchableOpacity onPress={onPress}>
       <LinearGradient
         colors={['#FFDD56', '#FE9F50']}
         start={{x: 0, y: 0}}
@@ -13,14 +13,14 @@ const CustomBtn = ({navTo,children,title}) => {
         style={styles.button}>
         <Text style={styles.buttonText}>{title}</Text>
       </LinearGradient>
-     </TouchableOpacity>
-  )
-}
+    </TouchableOpacity>
+  );
+};
 
-export default CustomBtn
+export default CustomBtn;
 
-const styles = StyleSheet.create({button: {
-    
+const styles = StyleSheet.create({
+  button: {
     borderRadius: 50,
     width: 280,
     shadowColor: '#000000',
@@ -46,4 +46,4 @@ const styles = StyleSheet.create({button: {
     },
     textShadowRadius: 6.5,
   },
-})
+});

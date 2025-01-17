@@ -33,7 +33,10 @@ const WelcomeScreen2 = ({navigation}) => {
             <Text style={styles.buttonText}>Begin</Text>
           </LinearGradient>
         </TouchableOpacity> */}
-        <CustomBtn navTo={'LogIn'} title={'Begin'} />
+        <CustomBtn
+          onPress={() => navigation.navigate('LogIn')}
+          title={'Begin'}
+        />
       </View>
       {/* </LinearGradient> */}
     </MainLayout>
