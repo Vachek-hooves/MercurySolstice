@@ -17,6 +17,7 @@ const Advice = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonPositions, setButtonPositions] = useState({});
   const [sunPosition, setSunPosition] = useState({});
+  console.log(buttonPositions);
 
   const timePeriods = ['morning', 'daytime', 'evening', 'night'];
 
@@ -47,7 +48,7 @@ const Advice = () => {
     dailyAdvice[selectedPeriod].advices.forEach((advice, index) => {
       newPositions[advice.id] = {
         left: Math.random() * 20,
-        marginTop: index === 0 ? 20 : Math.random() * 30,
+        marginTop: index === 0 ? 40 : Math.random() * 60,
       };
     });
     setButtonPositions(newPositions);
@@ -84,7 +85,7 @@ const Advice = () => {
 
   const renderAdviceButtons = () => (
     <View style={styles.adviceContainer}>
-      {dailyAdvice[selectedPeriod].advices.map((advice) => (
+      {dailyAdvice[selectedPeriod].advices.map(advice => (
         <TouchableOpacity
           key={advice.id}
           onPress={() => {
@@ -252,10 +253,11 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     transform: [
-      { translateX: -60 }, // Half of width
-      { translateY: -60 }, // Half of height
+      {translateX: -60}, // Half of width
+      {translateY: -60}, // Half of height
     ],
     // Add transition animation
     transition: 'all 0.3s ease-in-out',
+    borderRadius: 40,
   },
 });
