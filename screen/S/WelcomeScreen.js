@@ -14,7 +14,7 @@ const WelcomeScreen = ({navigation}) => {
       duration: 2000, // 2 seconds
       useNativeDriver: false,
     }).start(() => {
-      navigation.navigate('TabNav');
+      navigation.navigate('WelcomeScreen2');
     });
   }, []);
 
