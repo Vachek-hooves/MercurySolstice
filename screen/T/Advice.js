@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {dailyAdvice} from '../../data/advice';
@@ -49,14 +50,22 @@ const Advice = () => {
   );
 
   const renderAdviceButtons = () => (
-    <ScrollView style={styles.adviceContainer}>
-      {dailyAdvice[selectedPeriod].advices.map(advice => (
+    <View style={styles.adviceContainer}>
+      {dailyAdvice[selectedPeriod].advices.map((advice, index) => (
         <TouchableOpacity
           key={advice.id}
           onPress={() => {
             setSelectedAdvice(advice);
             setModalVisible(true);
-          }}>
+          }}
+          style={[
+            styles.adviceButtonWrapper,
+            // Random positioning for each button
+            {
+              left: `${Math.random() * 20}%`,
+              marginTop: index === 0 ? 20 : Math.random() * 30,
+            },
+          ]}>
           <LinearGradient
             colors={['#FFDD56', '#FE9F50']}
             style={styles.adviceButton}>
@@ -64,7 +73,12 @@ const Advice = () => {
           </LinearGradient>
         </TouchableOpacity>
       ))}
-    </ScrollView>
+
+      <Image
+        source={require('../../assets/ui/smallSun.png')}
+        style={styles.sunImage}
+      />
+    </View>
   );
 
   return (
@@ -146,6 +160,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 9.9,
     elevation: 8,
+    width: 200,
   },
   adviceButtonText: {
     padding: 16,
