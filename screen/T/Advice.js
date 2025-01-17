@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Advice = () => {
   return (
-    <View>
-      <Text>Advice</Text>
-    </View>
-  )
-}
+    <MainLayout>
+      
+    </MainLayout>
+  );
+};
 
-export default Advice
+export default Advice;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
