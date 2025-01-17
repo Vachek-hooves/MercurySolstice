@@ -1,24 +1,34 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   Modal,
-  ScrollView,
   Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {dailyAdvice} from '../../data/advice';
-// import Image from '../../assets/ui/smallSun.png';
 
-// const Image = require('../../assets/ui/smallSun.png');
 const Advice = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('morning');
   const [selectedAdvice, setSelectedAdvice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [buttonPositions, setButtonPositions] = useState({});
 
   const timePeriods = ['morning', 'daytime', 'evening', 'night'];
+
+  // Generate new random positions when time period changes
+  useEffect(() => {
+    const newPositions = {};
+    dailyAdvice[selectedPeriod].advices.forEach((advice, index) => {
+      newPositions[advice.id] = {
+        left: Math.random() * 20,
+        marginTop: index === 0 ? 20 : Math.random() * 30,
+      };
+    });
+    setButtonPositions(newPositions);
+  }, [selectedPeriod]);
 
   const renderTimeButtons = () => (
     <View style={styles.timeButtonsContainer}>
@@ -51,7 +61,7 @@ const Advice = () => {
 
   const renderAdviceButtons = () => (
     <View style={styles.adviceContainer}>
-      {dailyAdvice[selectedPeriod].advices.map((advice, index) => (
+      {dailyAdvice[selectedPeriod].advices.map((advice) => (
         <TouchableOpacity
           key={advice.id}
           onPress={() => {
@@ -60,10 +70,9 @@ const Advice = () => {
           }}
           style={[
             styles.adviceButtonWrapper,
-            // Random positioning for each button
-            {
-              left: `${Math.random() * 20}%`,
-              marginTop: index === 0 ? 20 : Math.random() * 30,
+            buttonPositions[advice.id] && {
+              left: `${buttonPositions[advice.id].left}%`,
+              marginTop: buttonPositions[advice.id].marginTop,
             },
           ]}>
           <LinearGradient
