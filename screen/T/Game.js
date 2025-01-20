@@ -31,7 +31,7 @@ const JUMP_HEIGHT = 370;
 const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
-const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720; // Higher position for clouds
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
 
 const Game = () => {
@@ -61,12 +61,13 @@ const Game = () => {
     const hitDistance = 100; // Increased hit box
     const xDiff = Math.abs(sunX - starX);
     const yDiff = Math.abs(sunY - starY);
-    
+
     return xDiff < hitDistance && yDiff < hitDistance;
   };
 
   const spawnNewCloud = () => {
-    const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
+    const randomHeight =
+      MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
     return {
       id: Date.now(),
       x: SCREEN_WIDTH + CLOUD_WIDTH,
@@ -89,7 +90,9 @@ const Game = () => {
         }));
 
         // Remove clouds that are off screen
-        const filteredClouds = newClouds.filter(cloud => cloud.x > -CLOUD_WIDTH);
+        const filteredClouds = newClouds.filter(
+          cloud => cloud.x > -CLOUD_WIDTH,
+        );
 
         // Add new cloud if needed
         const lastCloud = filteredClouds[filteredClouds.length - 1];
@@ -97,7 +100,9 @@ const Game = () => {
           const newCloud = {
             id: Date.now(),
             x: SCREEN_WIDTH + CLOUD_WIDTH,
-            y: MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
+            y:
+              MIN_CLOUD_HEIGHT +
+              Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
             hasStar: true,
           };
@@ -124,10 +129,7 @@ const Game = () => {
       // Apply gravity if not jumping
       if (!isJumping.current) {
         sunPosition.y.setValue(
-          Math.min(
-            sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 400,
-          ),
+          Math.min(sunPosition.y._value + GRAVITY, SCREEN_HEIGHT - 400),
         );
       }
 
@@ -143,7 +145,9 @@ const Game = () => {
       const initialCloud = {
         id: Date.now(),
         x: SCREEN_WIDTH + CLOUD_WIDTH,
-        y: MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
+        y:
+          MIN_CLOUD_HEIGHT +
+          Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
         type: 'normal',
         hasStar: true, // Ensure first cloud has a star
       };
@@ -201,7 +205,9 @@ const Game = () => {
       {/* Game Area */}
       <View style={styles.gameArea}>
         {clouds.map(cloud => (
-          <View key={cloud.id} style={[styles.cloudContainer, {left: cloud.x, top: cloud.y}]}>
+          <View
+            key={cloud.id}
+            style={[styles.cloudContainer, {left: cloud.x, top: cloud.y}]}>
             <Image
               source={
                 cloud.type === 'bonus'
@@ -314,6 +320,7 @@ const styles = StyleSheet.create({
     width: STAR_SIZE,
     height: STAR_SIZE,
     resizeMode: 'contain',
+    backgroundColor: 'green',
   },
   sun: {
     width: SUN_SIZE,
