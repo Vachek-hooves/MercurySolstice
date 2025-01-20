@@ -16,8 +16,14 @@ const moods = [
   {id: 6, name: 'Sadness', image: require('../../assets/mood/sadness.png')},
 ];
 
-const Diary = () => {
+const Diary = ({navigation}) => {
   const [selectedMood, setSelectedMood] = useState(null);
+
+  const handleMoodSelection = mood => {
+    console.log(mood);
+    setSelectedMood(mood);
+    navigation.navigate('DiaryDetails', {mood});
+  };
 
   const renderMoodGrid = () => {
     return (
@@ -27,7 +33,7 @@ const Diary = () => {
             <TouchableOpacity
               key={mood.id}
               style={styles.moodItem}
-              onPress={() => setSelectedMood(mood.id)}>
+              onPress={() => handleMoodSelection(mood)}>
               <Image source={mood.image} style={styles.moodEmoji} />
               <Text style={styles.moodText}>{mood.name}</Text>
             </TouchableOpacity>
@@ -39,7 +45,7 @@ const Diary = () => {
             <TouchableOpacity
               key={mood.id}
               style={styles.moodItem}
-              onPress={() => setSelectedMood(mood.id)}>
+              onPress={() => handleMoodSelection(mood)}>
               <Image source={mood.image} style={styles.moodEmoji} />
               <Text style={styles.moodText}>{mood.name}</Text>
             </TouchableOpacity>

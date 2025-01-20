@@ -1,7 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const DiaryDetails = () => {
+const DiaryDetails = ({route}) => {
+  const {mood} = route.params;
+  console.log(mood);
   return (
     <View>
       <Text>DiaryDetails</Text>
