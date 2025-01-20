@@ -27,7 +27,7 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 180;
+const JUMP_HEIGHT = 350;
 const GRAVITY = 2;
 
 const Game = () => {
@@ -38,7 +38,7 @@ const Game = () => {
   const sunPosition = useRef(
     new Animated.ValueXY({
       x: SCREEN_WIDTH / 6,
-      y: SCREEN_HEIGHT - 400,
+      y: SCREEN_HEIGHT - 300,
     }),
   ).current;
   const jumpAnimation = useRef(null);
@@ -62,19 +62,19 @@ const Game = () => {
       {
         id: Date.now(),
         x: SCREEN_WIDTH,
-        y: SCREEN_HEIGHT - 300,
+        y: SCREEN_HEIGHT - 720,
         type: 'normal',
       },
       {
         id: Date.now() + 1,
         x: SCREEN_WIDTH + SCREEN_WIDTH / 3,
-        y: SCREEN_HEIGHT - 400,
+        y: SCREEN_HEIGHT - 650,
         type: 'bonus',
       },
       {
         id: Date.now() + 2,
         x: SCREEN_WIDTH + (SCREEN_WIDTH / 3) * 2,
-        y: SCREEN_HEIGHT - 250,
+        y: SCREEN_HEIGHT - 550,
         type: 'normal',
       },
     ];
@@ -113,7 +113,7 @@ const Game = () => {
         sunPosition.y.setValue(
           Math.min(
             sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 400, // Ground level
+            SCREEN_HEIGHT - 450, // Ground level
           ),
         );
       }
