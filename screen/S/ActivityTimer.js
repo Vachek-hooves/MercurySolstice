@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Vibration} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import MainLayout from '../../components/Layout/MainLayout';
@@ -8,7 +8,7 @@ import {useAppContext} from '../../store/context';
 
 const ActivityTimer = ({route}) => {
   const {title} = route.params;
-  const TOTAL_SECONDS = 1 * 60; // 45 minutes in seconds
+  const TOTAL_SECONDS = 45 * 60; // 45 minutes in seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
   const progressRef = useRef();
@@ -33,7 +33,10 @@ const ActivityTimer = ({route}) => {
   const handleTimerComplete = async () => {
     try {
       const completedDuration = TOTAL_SECONDS - timeLeft;
-      if (completedDuration > 0) {  // Only save if some time has passed
+      if (completedDuration > 0) {
+        // Vibrate when timer completes
+        Vibration.vibrate([0, 500, 200, 500]); // Pattern: wait 0ms, vibrate 500ms, wait 200ms, vibrate 500ms
+        
         await saveTimer(title, completedDuration);
         console.log('Timer saved successfully:', {
           title,
