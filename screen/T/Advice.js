@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {dailyAdvice} from '../../data/advice';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Advice = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('morning');
@@ -156,37 +157,47 @@ const Advice = () => {
   );
 
   return (
-    <LinearGradient colors={['#001B3B', '#001432']} style={styles.container}>
+    <MainLayout>
+      {/* <LinearGradient colors={['#2D60E3', '#001432']} style={styles.container}> */}
       {renderTimeButtons()}
       {renderAdviceButtons()}
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {selectedAdvice && (
-              <>
-                <Text style={styles.modalTitle}>{selectedAdvice.title}</Text>
-                <Text style={styles.modalDescription}>
-                  {selectedAdvice.description}
-                </Text>
-                <Text style={styles.modalDuration}>
-                  Duration: {selectedAdvice.duration}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
-              </>
-            )}
+          <View style={styles.modalWrapper}>
+            <LinearGradient
+              colors={['#2D60E3', '#19357D']}
+              style={styles.modalContent}>
+              {selectedAdvice && (
+                <>
+                  <Text style={styles.modalTitle}>
+                    "{selectedAdvice.title.toUpperCase()}"
+                  </Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedAdvice.description}
+                  </Text>
+                </>
+              )}
+            </LinearGradient>
+            <Image source={require('../../assets/ui/smallSun.png')} style={styles.modalSun} />
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}>
+              <LinearGradient
+                colors={['#FFDD56', '#FE9F50']}
+                style={styles.closeButtonGradient}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
-    </LinearGradient>
+      {/* </LinearGradient> */}
+    </MainLayout>
   );
 };
 
@@ -252,45 +263,83 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    // paddingVertical: 40,
+  },
+  modalWrapper: {
+    // width: '80%',
+    position: 'relative',
   },
   modalContent: {
-    backgroundColor: '#001B3B',
-    padding: 20,
+    
     borderRadius: 20,
     width: '80%',
-    borderWidth: 1,
-    borderColor: '#FFD700',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    height: '55%',
+    width: '85%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFD700',
-    marginBottom: 10,
+    color: '#FFDD56',
+    marginBottom: 15,
+    textAlign: 'center',
+    paddingTop: 75,
+    paddingHorizontal: 10,
   },
   modalDescription: {
-    fontSize: 16,
+    fontSize: 18,
     color: 'white',
-    marginBottom: 10,
-  },
-  modalDuration: {
-    fontSize: 14,
-    color: '#FFD700',
-    marginBottom: 20,
+    lineHeight: 24,
+    textAlign: 'left',
+    padding: 25,
+    letterSpacing:1
   },
   closeButton: {
-    backgroundColor: '#FFD700',
-    padding: 10,
-    borderRadius: 20,
+    position: 'absolute',
+    top: -15,
+    right: -15,
+    zIndex: 1,
+    // padding: 25,
+  },
+  closeButtonGradient: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   closeButtonText: {
     color: '#001432',
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '900',
+    // padding: 10,
   },
   sunImage: {
     position: 'absolute',
     width: 200,
     height: 200,
+    transform: [{translateX: -60}, {translateY: -60}],
+  },
+  modalSun: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
     transform: [{translateX: -60}, {translateY: -60}],
   },
 });
