@@ -83,41 +83,41 @@ const ActivityTimer = ({route}) => {
           {/* <LinearGradient
             colors={['#2D60E3', '#19357D']}
             style={styles.timerContainer}> */}
-          <View style={styles.progressContainer}>
-            <AnimatedCircularProgress
-              ref={progressRef}
-              size={280}
-              width={15}
-              fill={0}
-              rotation={0}
-              tintColor="#A2FEFB8F"
-              backgroundColor="#91203E"
-              lineCap="round">
-              {() => (
-                <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
-              )}
-            </AnimatedCircularProgress>
+            <View style={styles.progressContainer}>
+              <AnimatedCircularProgress
+                ref={progressRef}
+                size={280}
+                width={15}
+                fill={0}
+                rotation={0}
+                tintColor="#A2FEFB8F"
+                backgroundColor="#91203E"
+                lineCap="round">
+                {() => (
+                  <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+                )}
+              </AnimatedCircularProgress>
 
-            <View style={styles.controlsContainer}>
-              <TouchableOpacity onPress={toggleTimer}>
-                <LinearGradient
-                  colors={['#FFDD56', '#FE9F50']}
-                  style={styles.controlButton}>
-                  <Text style={styles.controlButtonText}>
-                    {isPlaying ? '⏸' : '▶️'}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              <View style={styles.controlsContainer}>
+                <TouchableOpacity onPress={toggleTimer}>
+                  <LinearGradient
+                    colors={['#FFDD56', '#FE9F50']}
+                    style={styles.controlButton}>
+                    <Text style={styles.controlButtonText}>
+                      {isPlaying ? '⏸' : '▶️'}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={resetTimer}>
-                <LinearGradient
-                  colors={['#FFDD56', '#FE9F50']}
-                  style={styles.controlButton}>
-                  <Text style={styles.controlButtonText}>⏹</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={resetTimer}>
+                  <LinearGradient
+                    colors={['#FFDD56', '#FE9F50']}
+                    style={styles.controlButton}>
+                    <Text style={styles.controlButtonText}>⏹</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
           {/* </LinearGradient> */}
         </View>
       </View>
@@ -147,12 +147,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     borderRadius: 25,
+
   },
   timerContainer: {
     borderRadius: 20,
-    padding: 20,
-    alignItems: 'center',
+    // padding: 20,
+    // alignItems: 'center',
     width: '100%',
+
   },
   titleContainer: {
     top: -25,
