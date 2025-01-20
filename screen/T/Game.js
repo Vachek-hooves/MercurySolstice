@@ -26,7 +26,7 @@ const LEVELS = {
   10: {clouds: 75, speed: 5.5, description: 'Финальное испытание'},
 };
 
-const CLOUD_WIDTH = 80;
+const CLOUD_WIDTH = 120;
 const JUMP_HEIGHT = 180;
 const GRAVITY = 2;
 
@@ -37,8 +37,8 @@ const Game = () => {
   const [clouds, setClouds] = useState([]);
   const sunPosition = useRef(
     new Animated.ValueXY({
-      x: SCREEN_WIDTH / 4,
-      y: SCREEN_HEIGHT - 200,
+      x: SCREEN_WIDTH / 6,
+      y: SCREEN_HEIGHT - 400,
     }),
   ).current;
   const jumpAnimation = useRef(null);
@@ -113,7 +113,7 @@ const Game = () => {
         sunPosition.y.setValue(
           Math.min(
             sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 200, // Ground level
+            SCREEN_HEIGHT - 400, // Ground level
           ),
         );
       }
