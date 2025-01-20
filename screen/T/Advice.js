@@ -24,56 +24,56 @@ const Advice = () => {
   const timePositions = {
     morning: {
       buttonPositions: [
-        { left: '15%', top: '20%' },
-        { left: '25%', top: '35%' },
-        { left: '10%', top: '50%' },
-        { left: '30%', top: '65%' },
-        { left: '15%', top: '80%' }
+        {left: '15%', top: '10%'},
+        {left: '45%', top: '25%'},
+        {left: '10%', top: '40%'},
+        {left: '35%', top: '55%'},
+        {left: '47%', top: '80%'},
       ],
       sunPosition: {
         left: '10%',
-        top: '80%'
-      }
+        top: '80%',
+      },
     },
     daytime: {
       buttonPositions: [
-        { left: '40%', top: '15%' },
-        { left: '60%', top: '30%' },
-        { left: '45%', top: '45%' },
-        { left: '65%', top: '60%' },
-        { left: '50%', top: '75%' }
+        {left: '40%', top: '5%'},
+        {left: '10%', top: '20%'},
+        {left: '45%', top: '35%'},
+        {left: '45%', top: '65%'},
+        {left: '10%', top: '80%'},
       ],
       sunPosition: {
         left: '25%',
-        top: '50%'
-      }
+        top: '50%',
+      },
     },
     evening: {
       buttonPositions: [
-        { left: '70%', top: '20%' },
-        { left: '85%', top: '35%' },
-        { left: '75%', top: '50%' },
-        { left: '90%', top: '65%' },
-        { left: '80%', top: '80%' }
+        {left: '50%', top: '5%'},
+        {left: '25%', top: '25%'},
+        {left: '45%', top: '45%'},
+        {left: '30%', top: '60%'},
+        {left: '10%', top: '75%'},
       ],
       sunPosition: {
-        left: '40%',
-        top: '20%'
-      }
+        left: '20%',
+        top: '5%',
+      },
     },
     night: {
       buttonPositions: [
-        { left: '15%', top: '25%' },
-        { left: '30%', top: '40%' },
-        { left: '20%', top: '55%' },
-        { left: '35%', top: '70%' },
-        { left: '25%', top: '85%' }
+        {left: '50%', top: '5%'},
+        {left: '20%', top: '25%'},
+        {left: '45%', top: '45%'},
+        {left: '25%', top: '65%'},
+        {left: '45%', top: '85%'},
       ],
       sunPosition: {
-        left: '75%',
-        top: '0%'
-      }
-    }
+        left: '8%',
+        top: '95%',
+      },
+    },
   };
 
   // Update sun position based on time period
@@ -81,7 +81,7 @@ const Advice = () => {
     const positions = timePositions[selectedPeriod];
     setSunPosition(positions.sunPosition);
 
-    // Generate button positions (existing code)
+    // Set button positions from predefined values
     const newPositions = {};
     dailyAdvice[selectedPeriod].advices.forEach((advice, index) => {
       newPositions[advice.id] = positions.buttonPositions[index];
@@ -130,8 +130,8 @@ const Advice = () => {
           style={[
             styles.adviceButtonWrapper,
             buttonPositions[advice.id] && {
-              left: `${buttonPositions[advice.id].left}%`,
-              top: `${buttonPositions[advice.id].top}%`,
+              left: buttonPositions[advice.id].left,
+              top: buttonPositions[advice.id].top,
             },
           ]}>
           <LinearGradient
@@ -222,6 +222,11 @@ const styles = StyleSheet.create({
   },
   adviceContainer: {
     flex: 1,
+    position: 'relative',
+  },
+  adviceButtonWrapper: {
+    position: 'absolute',
+    width: 200,
   },
   adviceButton: {
     borderRadius: 25,
@@ -234,7 +239,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 9.9,
     elevation: 8,
-    width: 200,
   },
   adviceButtonText: {
     padding: 16,
@@ -287,12 +291,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 200,
     height: 200,
-    transform: [
-      {translateX: -60}, // Half of width
-      {translateY: -60}, // Half of height
-    ],
-    // Add transition animation
-    transition: 'all 0.3s ease-in-out',
-    borderRadius: 40,
+    transform: [{translateX: -60}, {translateY: -60}],
   },
 });
