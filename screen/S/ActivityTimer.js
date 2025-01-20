@@ -67,9 +67,9 @@ const ActivityTimer = ({route}) => {
   return (
     <MainLayout>
       <View style={styles.container}>
-        {/* <View style={styles.dateWrapper}>
+        <View style={styles.dateWrapper}>
           <CurrentDate />
-        </View> */}
+        </View>
 
         <View style={styles.titleContainer}>
           <LinearGradient
@@ -78,9 +78,11 @@ const ActivityTimer = ({route}) => {
             <Text style={styles.titleText}>{title}</Text>
           </LinearGradient>
         </View>
-        <LinearGradient
-          colors={['#2D60E3', '#19357D']}
-          style={styles.timerContainer}>
+
+        <View style={styles.timerWrapper}>
+          {/* <LinearGradient
+            colors={['#2D60E3', '#19357D']}
+            style={styles.timerContainer}> */}
           <View style={styles.progressContainer}>
             <AnimatedCircularProgress
               ref={progressRef}
@@ -88,8 +90,8 @@ const ActivityTimer = ({route}) => {
               width={15}
               fill={0}
               rotation={0}
-              tintColor="#91203E"
-              backgroundColor="#A2FEFB8F"
+              tintColor="#A2FEFB8F"
+              backgroundColor="#91203E"
               lineCap="round">
               {() => (
                 <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
@@ -116,7 +118,8 @@ const ActivityTimer = ({route}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </LinearGradient>
+          {/* </LinearGradient> */}
+        </View>
       </View>
     </MainLayout>
   );
@@ -126,7 +129,8 @@ export default ActivityTimer;
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
+    justifyContent: 'center',
   },
   dateWrapper: {
     position: 'absolute',
@@ -137,25 +141,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 1,
   },
-  timerContainer: {
-    marginTop: 150,
+  timerWrapper: {
     marginHorizontal: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 25,
+  },
+  timerContainer: {
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
-    backgroundColor: '#2D60E3',
+    width: '100%',
   },
   titleContainer: {
-    position: 'absolute',
     top: -25,
     zIndex: 1,
   },
   titleButton: {
-    // paddingHorizontal: 30,
-    // paddingVertical: 12,
-    borderRadius: 25,
+    // borderRadius: 25,
+    width: '40%',
+    borderTopEndRadius: 25,
+    borderBottomEndRadius: 25,
   },
   titleText: {
+    paddingHorizontal: 30,
+    paddingVertical: 16,
     color: '#001432',
     fontSize: 18,
     fontWeight: 'bold',
@@ -179,6 +190,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 14.5,
     elevation: 14.5,
+    padding: 20,
   },
   timerText: {
     fontSize: 36,
@@ -187,9 +199,10 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
+    justifyContent: 'space-between',
+    // gap: 20,
     marginTop: 20,
+    width: '80%',
   },
   controlButton: {
     width: 50,
