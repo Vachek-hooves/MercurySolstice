@@ -4,14 +4,18 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import MainLayout from '../../components/Layout/MainLayout';
 import CurrentDate from '../../components/ui/CurrentDate';
+import {useAppContext} from '../../store/context';
 
 const ActivityTimer = ({route}) => {
   const {title} = route.params;
-  const TOTAL_SECONDS = 5 * 60; // 45 minutes in seconds
+  const TOTAL_SECONDS = 1 * 60; // 45 minutes in seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
   const progressRef = useRef();
   const timerRef = useRef(null);
+  
+  // Get context functions
+  const {saveTimer, timerHistory} = useAppContext();
 
   const formatTime = seconds => {
     const hrs = Math.floor(seconds / 3600);
@@ -26,6 +30,22 @@ const ActivityTimer = ({route}) => {
     return ((TOTAL_SECONDS - timeLeft) / TOTAL_SECONDS) * 100;
   };
 
+  const handleTimerComplete = async () => {
+    try {
+      const completedDuration = TOTAL_SECONDS - timeLeft;
+      if (completedDuration > 0) {  // Only save if some time has passed
+        await saveTimer(title, completedDuration);
+        console.log('Timer saved successfully:', {
+          title,
+          duration: completedDuration,
+          history: timerHistory[title]
+        });
+      }
+    } catch (error) {
+      console.error('Error saving timer:', error);
+    }
+  };
+
   const toggleTimer = () => {
     if (!isPlaying) {
       timerRef.current = setInterval(() => {
@@ -33,6 +53,7 @@ const ActivityTimer = ({route}) => {
           if (prevTime <= 1) {
             clearInterval(timerRef.current);
             setIsPlaying(false);
+            handleTimerComplete();
             return 0;
           }
           return prevTime - 1;
@@ -44,8 +65,12 @@ const ActivityTimer = ({route}) => {
     setIsPlaying(!isPlaying);
   };
 
-  const resetTimer = () => {
+  const resetTimer = async () => {
     clearInterval(timerRef.current);
+    // Save the timer if it was running and some time has passed
+    if (isPlaying || timeLeft < TOTAL_SECONDS) {
+      await handleTimerComplete();
+    }
     setIsPlaying(false);
     setTimeLeft(TOTAL_SECONDS);
     progressRef.current?.reAnimate(0);
@@ -53,13 +78,17 @@ const ActivityTimer = ({route}) => {
 
   useEffect(() => {
     progressRef.current?.animate(calculateProgress(), 300);
+    if (timeLeft === 0) {
+      handleTimerComplete();
+    }
   }, [timeLeft]);
 
-  // Cleanup on unmount
+  // Cleanup and save on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        handleTimerComplete();
       }
     };
   }, []);
