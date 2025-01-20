@@ -1,20 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import React, {useState, useRef, useEffect} from 'react';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import MainLayout from '../../components/Layout/MainLayout';
 import CurrentDate from '../../components/ui/CurrentDate';
 
-const ActivityTimer = ({ route }) => {
-  const { title } = route.params;
+const ActivityTimer = ({route}) => {
+  const {title} = route.params;
   const TOTAL_SECONDS = 5 * 60; // 45 minutes in seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
   const progressRef = useRef();
   const timerRef = useRef(null);
-  
 
-  const formatTime = (seconds) => {
+  const formatTime = seconds => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
@@ -30,7 +29,7 @@ const ActivityTimer = ({ route }) => {
   const toggleTimer = () => {
     if (!isPlaying) {
       timerRef.current = setInterval(() => {
-        setTimeLeft((prevTime) => {
+        setTimeLeft(prevTime => {
           if (prevTime <= 1) {
             clearInterval(timerRef.current);
             setIsPlaying(false);
@@ -71,18 +70,17 @@ const ActivityTimer = ({ route }) => {
         {/* <View style={styles.dateWrapper}>
           <CurrentDate />
         </View> */}
-        
+
+        <View style={styles.titleContainer}>
+          <LinearGradient
+            colors={['#FFDD56', '#FE9F50']}
+            style={styles.titleButton}>
+            <Text style={styles.titleText}>{title}</Text>
+          </LinearGradient>
+        </View>
         <LinearGradient
           colors={['#2D60E3', '#19357D']}
           style={styles.timerContainer}>
-          <View style={styles.titleContainer}>
-            <LinearGradient
-              colors={['#FFDD56', '#FE9F50']}
-              style={styles.titleButton}>
-              <Text style={styles.titleText}>{title}</Text>
-            </LinearGradient>
-          </View>
-
           <View style={styles.progressContainer}>
             <AnimatedCircularProgress
               ref={progressRef}
@@ -128,7 +126,7 @@ export default ActivityTimer;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
   },
   dateWrapper: {
     position: 'absolute',
@@ -145,6 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
+    backgroundColor: '#2D60E3',
   },
   titleContainer: {
     position: 'absolute',
@@ -152,8 +151,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   titleButton: {
-    paddingHorizontal: 30,
-    paddingVertical: 12,
+    // paddingHorizontal: 30,
+    // paddingVertical: 12,
     borderRadius: 25,
   },
   titleText: {
@@ -164,6 +163,22 @@ const styles = StyleSheet.create({
   progressContainer: {
     alignItems: 'center',
     marginTop: 30,
+    shadowColor: '#A9B2F6',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 11,
+    elevation: 11,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: -9,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 14.5,
+    elevation: 14.5,
   },
   timerText: {
     fontSize: 36,
