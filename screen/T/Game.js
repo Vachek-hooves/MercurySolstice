@@ -27,11 +27,11 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 350;
+const JUMP_HEIGHT = 400;
 const GRAVITY = 2;
 const SUN_SIZE = 60;
 const STAR_SIZE = 30;
-const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
 
 const Game = () => {
@@ -39,6 +39,7 @@ const Game = () => {
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [clouds, setClouds] = useState([]);
+  const [collectedStars, setCollectedStars] = useState(new Set());
   const sunPosition = useRef(
     new Animated.ValueXY({
       x: SCREEN_WIDTH / 6,
@@ -104,7 +105,6 @@ const Game = () => {
 
         // Add new clouds if needed
         if (filteredClouds.length < 3) {
-          const lastCloud = filteredClouds[filteredClouds.length - 1];
           const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
           
           filteredClouds.push({
@@ -124,8 +124,10 @@ const Game = () => {
           height: SUN_SIZE,
         };
 
+        let scoreIncrement = 0;
+
         filteredClouds.forEach(cloud => {
-          if (cloud.hasStar) {
+          if (cloud.hasStar && !collectedStars.has(cloud.id)) {
             const starBounds = {
               x: cloud.x + CLOUD_WIDTH / 2 - STAR_SIZE / 2,
               y: cloud.y - STAR_SIZE,
@@ -134,12 +136,16 @@ const Game = () => {
             };
 
             if (checkCollision(sunBounds, starBounds)) {
-              cloud.hasStar = false; // Remove collected star
-              setScore(prev => prev + 1); // Increment score
+              setCollectedStars(prev => new Set([...prev, cloud.id]));
+              scoreIncrement += 10; // Add 10 points per star
               // TODO: Play star collection sound
             }
           }
         });
+
+        if (scoreIncrement > 0) {
+          setScore(prev => prev + scoreIncrement);
+        }
 
         return filteredClouds;
       });
@@ -149,7 +155,7 @@ const Game = () => {
         sunPosition.y.setValue(
           Math.min(
             sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 450, // Ground level
+            SCREEN_HEIGHT - 400,
           ),
         );
       }
@@ -224,7 +230,7 @@ const Game = () => {
               }
               style={styles.cloud}
             />
-            {cloud.hasStar && (
+            {cloud.hasStar && !collectedStars.has(cloud.id) && (
               <Image
                 source={require('../../assets/game/star.png')}
                 style={styles.cloudStar}
