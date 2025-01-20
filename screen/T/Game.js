@@ -27,11 +27,10 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 370;
-const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
-const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720; // Higher position for clouds
+const GRAVITY = 2;
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
 
 const Game = () => {
@@ -39,16 +38,19 @@ const Game = () => {
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [clouds, setClouds] = useState([]);
+  const [stars, setStars] = useState([]);
   const [collectedStars, setCollectedStars] = useState(new Set());
+  
   const sunPosition = useRef(
     new Animated.ValueXY({
-      x: SCREEN_WIDTH / 6,
+      x: SCREEN_WIDTH / 2,
       y: SCREEN_HEIGHT - 300,
     }),
   ).current;
-  const jumpAnimation = useRef(null);
-  const isJumping = useRef(false);
   const gameLoop = useRef(null);
+
+  // Add a ref to track stars being processed
+  const processingStars = useRef(new Set());
 
   // Add this for debugging
   useEffect(() => {
@@ -56,82 +58,107 @@ const Game = () => {
     // console.log('Collected stars:', collectedStars);
   }, [clouds, collectedStars]);
 
-  const checkStarCollision = (sunX, sunY, starX, starY) => {
-    // Create a larger hit box for easier collection
-    const hitDistance = 100; // Increased hit box
-    const xDiff = Math.abs(sunX - starX);
-    const yDiff = Math.abs(sunY - starY);
-
-    return xDiff < hitDistance && yDiff < hitDistance;
-  };
-
-  const spawnNewCloud = () => {
-    const randomHeight =
-      MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
+  // Spawn a new star with slower falling speed
+  const spawnStar = () => {
     return {
       id: Date.now(),
-      x: SCREEN_WIDTH + CLOUD_WIDTH,
-      y: randomHeight,
-      type: Math.random() > 0.8 ? 'bonus' : 'normal',
-      hasStar: true,
+      x: Math.random() * (SCREEN_WIDTH - STAR_SIZE),
+      y: -STAR_SIZE,
+      speed: Math.random() * 0.5 + 0.3, // Reduced speed range between 0.3 and 0.8
     };
   };
 
+  // Spawn a new cloud
+  const spawnCloud = () => {
+    return {
+      id: Date.now(),
+      x: SCREEN_WIDTH + CLOUD_WIDTH,
+      y: MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
+      type: Math.random() > 0.8 ? 'bonus' : 'normal',
+    };
+  };
+
+  // Check collision between sun and star
+  const checkStarCollision = (sun, star) => {
+    const hitDistance = 80;
+    const xDiff = Math.abs(sun.x - star.x);
+    const yDiff = Math.abs(sun.y - star.y);
+    
+    return xDiff < hitDistance && yDiff < hitDistance;
+  };
+
+  // Add a separate function for collecting stars
+  const collectStar = (starId) => {
+    if (!collectedStars.has(starId) && !processingStars.current.has(starId)) {
+      processingStars.current.add(starId);
+      setCollectedStars(prev => new Set([...prev, starId]));
+      setScore(prev => prev + 10);
+      
+      // Remove from processing after a short delay
+      setTimeout(() => {
+        processingStars.current.delete(starId);
+      }, 100);
+    }
+  };
+
+  // Game loop
   const startGameLoop = () => {
     const updateGame = () => {
-      // Get current sun position
-      const currentSunX = sunPosition.x._value;
-      const currentSunY = sunPosition.y._value;
-
+      // Update clouds
       setClouds(prevClouds => {
         const newClouds = prevClouds.map(cloud => ({
           ...cloud,
           x: cloud.x - 0.5,
         }));
 
-        // Remove clouds that are off screen
-        const filteredClouds = newClouds.filter(
-          cloud => cloud.x > -CLOUD_WIDTH,
-        );
+        const filteredClouds = newClouds.filter(cloud => cloud.x > -CLOUD_WIDTH);
 
-        // Add new cloud if needed
-        const lastCloud = filteredClouds[filteredClouds.length - 1];
-        if (!lastCloud || lastCloud.x < SCREEN_WIDTH - CLOUD_WIDTH * 2) {
-          const newCloud = {
-            id: Date.now(),
-            x: SCREEN_WIDTH + CLOUD_WIDTH,
-            y:
-              MIN_CLOUD_HEIGHT +
-              Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
-            type: Math.random() > 0.8 ? 'bonus' : 'normal',
-            hasStar: true,
-          };
-          filteredClouds.push(newCloud);
+        if (!filteredClouds.length || filteredClouds[filteredClouds.length - 1].x < SCREEN_WIDTH - CLOUD_WIDTH * 2) {
+          filteredClouds.push(spawnCloud());
         }
-
-        // Check for star collection
-        filteredClouds.forEach(cloud => {
-          if (cloud.hasStar && !collectedStars.has(cloud.id)) {
-            const starX = cloud.x + CLOUD_WIDTH / 2;
-            const starY = cloud.y - STAR_SIZE;
-
-            if (checkStarCollision(currentSunX, currentSunY, starX, starY)) {
-              console.log('Star collected!'); // Debug log
-              setCollectedStars(prev => new Set([...prev, cloud.id]));
-              setScore(prev => prev + 10);
-            }
-          }
-        });
 
         return filteredClouds;
       });
 
-      // Apply gravity if not jumping
-      if (!isJumping.current) {
-        sunPosition.y.setValue(
-          Math.min(sunPosition.y._value + GRAVITY, SCREEN_HEIGHT - 400),
+      // Update stars
+      setStars(prevStars => {
+        // Move existing stars down
+        const newStars = prevStars.map(star => ({
+          ...star,
+          y: star.y + star.speed,
+        }));
+
+        // Remove stars that are off screen or collected
+        const filteredStars = newStars.filter(
+          star => star.y < SCREEN_HEIGHT && !collectedStars.has(star.id)
         );
-      }
+
+        // Spawn new stars less frequently
+        if (Math.random() < 0.01) {
+          filteredStars.push(spawnStar());
+        }
+
+        // Check for star collection
+        const sunBounds = {
+          x: sunPosition.x._value + SUN_SIZE / 2,
+          y: sunPosition.y._value + SUN_SIZE / 2,
+        };
+
+        filteredStars.forEach(star => {
+          if (!collectedStars.has(star.id) && !processingStars.current.has(star.id)) {
+            const starCenter = {
+              x: star.x + STAR_SIZE / 2,
+              y: star.y + STAR_SIZE / 2,
+            };
+
+            if (checkStarCollision(sunBounds, starCenter)) {
+              collectStar(star.id);
+            }
+          }
+        });
+
+        return filteredStars;
+      });
 
       gameLoop.current = requestAnimationFrame(updateGame);
     };
@@ -139,19 +166,11 @@ const Game = () => {
     gameLoop.current = requestAnimationFrame(updateGame);
   };
 
-  // Initialize game with a single cloud that has a star
+  // Initialize game
   useEffect(() => {
     if (isPlaying) {
-      const initialCloud = {
-        id: Date.now(),
-        x: SCREEN_WIDTH + CLOUD_WIDTH,
-        y:
-          MIN_CLOUD_HEIGHT +
-          Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
-        type: 'normal',
-        hasStar: true, // Ensure first cloud has a star
-      };
-      setClouds([initialCloud]);
+      setClouds([spawnCloud()]);
+      setStars([spawnStar()]);
       startGameLoop();
     }
     return () => {
@@ -159,26 +178,18 @@ const Game = () => {
     };
   }, [isPlaying]);
 
-  const handleJump = () => {
-    if (isJumping.current) return;
+  // Cleanup processing set when component unmounts
+  useEffect(() => {
+    return () => {
+      processingStars.current.clear();
+    };
+  }, []);
 
-    isJumping.current = true;
-    Animated.sequence([
-      // Jump up
-      Animated.timing(sunPosition.y, {
-        toValue: sunPosition.y._value - JUMP_HEIGHT,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      // Fall down
-      Animated.timing(sunPosition.y, {
-        toValue: sunPosition.y._value,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      isJumping.current = false;
-    });
+  // Handle sun movement
+  const handleJump = () => {
+    // Move sun left or right instead of jumping
+    const newX = Math.max(0, Math.min(SCREEN_WIDTH - SUN_SIZE, sunPosition.x._value + 50));
+    sunPosition.x.setValue(newX);
   };
 
   return (
@@ -204,6 +215,7 @@ const Game = () => {
 
       {/* Game Area */}
       <View style={styles.gameArea}>
+        {/* Render clouds */}
         {clouds.map(cloud => (
           <View
             key={cloud.id}
@@ -216,14 +228,27 @@ const Game = () => {
               }
               style={styles.cloud}
             />
-            {cloud.hasStar && !collectedStars.has(cloud.id) && (
-              <Image
-                source={require('../../assets/game/star.png')}
-                style={styles.cloudStar}
-              />
-            )}
           </View>
         ))}
+
+        {/* Render falling stars */}
+        {stars.map(star => (
+          !collectedStars.has(star.id) && (
+            <Image
+              key={star.id}
+              source={require('../../assets/game/star.png')}
+              style={[
+                styles.star,
+                {
+                  left: star.x,
+                  top: star.y,
+                },
+              ]}
+            />
+          )
+        ))}
+
+        {/* Render sun */}
         <Animated.Image
           source={require('../../assets/ui/Sun.png')}
           style={[
@@ -240,11 +265,17 @@ const Game = () => {
 
       {/* Controls */}
       <View style={styles.controlsContainer}>
-        <TouchableOpacity style={styles.jumpButton} onPress={handleJump}>
-          <Image
-            source={require('../../assets/game/jump.png')}
-            style={styles.jumpIcon}
-          />
+        <TouchableOpacity style={styles.moveButton} onPress={() => {
+          const newX = Math.max(0, sunPosition.x._value - 50);
+          sunPosition.x.setValue(newX);
+        }}>
+          <Text style={styles.buttonText}>←</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.moveButton} onPress={() => {
+          const newX = Math.min(SCREEN_WIDTH - SUN_SIZE, sunPosition.x._value + 50);
+          sunPosition.x.setValue(newX);
+        }}>
+          <Text style={styles.buttonText}>→</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -314,13 +345,11 @@ const styles = StyleSheet.create({
     height: 60,
     resizeMode: 'contain',
   },
-  cloudStar: {
+  star: {
     position: 'absolute',
-    top: -STAR_SIZE,
     width: STAR_SIZE,
     height: STAR_SIZE,
     resizeMode: 'contain',
-    backgroundColor: 'green',
   },
   sun: {
     width: SUN_SIZE,
@@ -336,18 +365,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 20,
   },
-  jumpButton: {
-    width: 80,
-    height: 80,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 40,
+  moveButton: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  jumpIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
+  buttonText: {
+    fontSize: 24,
+    color: 'white',
   },
 });
 
