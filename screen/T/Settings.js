@@ -1,14 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const Settings = () => {
-  return (
-    <View>
-      <Text>Settings</Text>
-    </View>
-  )
-}
+  return <MainLayout></MainLayout>;
+};
 
-export default Settings
+export default Settings;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
