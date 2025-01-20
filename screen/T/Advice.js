@@ -21,35 +21,70 @@ const Advice = () => {
 
   const timePeriods = ['morning', 'daytime', 'evening', 'night'];
 
+  const timePositions = {
+    morning: {
+      buttonPositions: [
+        { left: '15%', top: '20%' },
+        { left: '25%', top: '35%' },
+        { left: '10%', top: '50%' },
+        { left: '30%', top: '65%' },
+        { left: '15%', top: '80%' }
+      ],
+      sunPosition: {
+        left: '10%',
+        top: '80%'
+      }
+    },
+    daytime: {
+      buttonPositions: [
+        { left: '40%', top: '15%' },
+        { left: '60%', top: '30%' },
+        { left: '45%', top: '45%' },
+        { left: '65%', top: '60%' },
+        { left: '50%', top: '75%' }
+      ],
+      sunPosition: {
+        left: '25%',
+        top: '50%'
+      }
+    },
+    evening: {
+      buttonPositions: [
+        { left: '70%', top: '20%' },
+        { left: '85%', top: '35%' },
+        { left: '75%', top: '50%' },
+        { left: '90%', top: '65%' },
+        { left: '80%', top: '80%' }
+      ],
+      sunPosition: {
+        left: '40%',
+        top: '20%'
+      }
+    },
+    night: {
+      buttonPositions: [
+        { left: '15%', top: '25%' },
+        { left: '30%', top: '40%' },
+        { left: '20%', top: '55%' },
+        { left: '35%', top: '70%' },
+        { left: '25%', top: '85%' }
+      ],
+      sunPosition: {
+        left: '75%',
+        top: '0%'
+      }
+    }
+  };
+
   // Update sun position based on time period
   useEffect(() => {
-    const positions = {
-      morning: {
-        left: '10%',
-        top: '80%',
-      },
-      daytime: {
-        left: '25%',
-        top: '50%',
-      },
-      evening: {
-        left: '40%',
-        top: '20%',
-      },
-      night: {
-        left: '75%',
-        top: '0%',
-      },
-    };
-    setSunPosition(positions[selectedPeriod]);
+    const positions = timePositions[selectedPeriod];
+    setSunPosition(positions.sunPosition);
 
     // Generate button positions (existing code)
     const newPositions = {};
     dailyAdvice[selectedPeriod].advices.forEach((advice, index) => {
-      newPositions[advice.id] = {
-        left: Math.random() * 20,
-        marginTop: index === 0 ? 40 : Math.random() * 60,
-      };
+      newPositions[advice.id] = positions.buttonPositions[index];
     });
     setButtonPositions(newPositions);
   }, [selectedPeriod]);
@@ -96,7 +131,7 @@ const Advice = () => {
             styles.adviceButtonWrapper,
             buttonPositions[advice.id] && {
               left: `${buttonPositions[advice.id].left}%`,
-              marginTop: buttonPositions[advice.id].marginTop,
+              top: `${buttonPositions[advice.id].top}%`,
             },
           ]}>
           <LinearGradient
