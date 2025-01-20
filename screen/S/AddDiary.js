@@ -11,6 +11,7 @@ import MainLayout from '../../components/Layout/MainLayout';
 import LinearGradient from 'react-native-linear-gradient';
 import {useAppContext} from '../../store/context';
 import {moodRecommendations} from '../../data/diaryMood';
+import GoBack from '../../components/icon/GoBack';
 
 const AddDiary = ({route, navigation}) => {
   const {mood} = route.params;
@@ -67,6 +68,7 @@ const AddDiary = ({route, navigation}) => {
           </LinearGradient>
         </TouchableOpacity>
       </View>
+      <GoBack />
     </MainLayout>
   );
 };

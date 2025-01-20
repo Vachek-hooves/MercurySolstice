@@ -12,6 +12,7 @@ import {
 import MainLayout from '../../components/Layout/MainLayout';
 import {useAppContext} from '../../store/context';
 import LinearGradient from 'react-native-linear-gradient';
+import GoBack from '../../components/icon/GoBack';
 
 const DiaryDetails = () => {
   const {diaryEntries} = useAppContext();
@@ -111,6 +112,7 @@ const DiaryDetails = () => {
         </ScrollView>
         {renderDetailModal()}
       </View>
+      <GoBack />
     </MainLayout>
   );
 };
