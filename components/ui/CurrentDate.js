@@ -22,9 +22,10 @@ export default CurrentDate;
 const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
-    color: '#FFDD56',
+    color: '#FFF',
     padding: 8,
     borderRadius: '50%',
+    fontWeight: 'bold',
   },
   dateContainer: {
     borderColor: '#FFF',
@@ -33,5 +34,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     // paddingTop:14
   },
-
 });
