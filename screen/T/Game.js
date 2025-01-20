@@ -27,10 +27,10 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 350;
+const JUMP_HEIGHT = 370;
 const GRAVITY = 2;
-const SUN_SIZE = 60;
-const STAR_SIZE = 30;
+const SUN_SIZE = 70;
+const STAR_SIZE = 50;
 const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
 
