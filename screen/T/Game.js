@@ -29,6 +29,10 @@ const LEVELS = {
 const CLOUD_WIDTH = 120;
 const JUMP_HEIGHT = 350;
 const GRAVITY = 2;
+const SUN_SIZE = 60;
+const STAR_SIZE = 30;
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;
+const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
 
 const Game = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -57,25 +61,28 @@ const Game = () => {
   }, [isPlaying]);
 
   const initializeGame = () => {
-    // Initial clouds setup
+    // Initial clouds setup with higher positions
     const initialClouds = [
       {
         id: Date.now(),
         x: SCREEN_WIDTH,
         y: SCREEN_HEIGHT - 720,
         type: 'normal',
+        hasStar: true,
       },
       {
         id: Date.now() + 1,
         x: SCREEN_WIDTH + SCREEN_WIDTH / 3,
         y: SCREEN_HEIGHT - 650,
         type: 'bonus',
+        hasStar: false,
       },
       {
         id: Date.now() + 2,
         x: SCREEN_WIDTH + (SCREEN_WIDTH / 3) * 2,
         y: SCREEN_HEIGHT - 550,
         type: 'normal',
+        hasStar: false,
       },
     ];
     setClouds(initialClouds);
@@ -87,7 +94,7 @@ const Game = () => {
       setClouds(prevClouds => {
         const newClouds = prevClouds.map(cloud => ({
           ...cloud,
-          x: cloud.x - 0.5, // Adjust speed based on level
+          x: cloud.x - 2, // Adjust speed based on level
         }));
 
         // Remove clouds that are off screen
@@ -97,13 +104,42 @@ const Game = () => {
 
         // Add new clouds if needed
         if (filteredClouds.length < 3) {
+          const lastCloud = filteredClouds[filteredClouds.length - 1];
+          const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
+          
           filteredClouds.push({
             id: Date.now(),
             x: SCREEN_WIDTH + CLOUD_WIDTH,
-            y: SCREEN_HEIGHT - 200 - Math.random() * 300, // Random height
+            y: randomHeight,
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
+            hasStar: Math.random() > 0.7, // 30% chance for a star
           });
         }
+
+        // Check for star collection
+        const sunBounds = {
+          x: sunPosition.x._value,
+          y: sunPosition.y._value,
+          width: SUN_SIZE,
+          height: SUN_SIZE,
+        };
+
+        filteredClouds.forEach(cloud => {
+          if (cloud.hasStar) {
+            const starBounds = {
+              x: cloud.x + CLOUD_WIDTH / 2 - STAR_SIZE / 2,
+              y: cloud.y - STAR_SIZE,
+              width: STAR_SIZE,
+              height: STAR_SIZE,
+            };
+
+            if (checkCollision(sunBounds, starBounds)) {
+              cloud.hasStar = false; // Remove collected star
+              setScore(prev => prev + 1); // Increment score
+              // TODO: Play star collection sound
+            }
+          }
+        });
 
         return filteredClouds;
       });
@@ -122,6 +158,15 @@ const Game = () => {
     };
 
     gameLoop.current = requestAnimationFrame(updateGame);
+  };
+
+  const checkCollision = (rect1, rect2) => {
+    return (
+      rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y
+    );
   };
 
   const handleJump = () => {
@@ -170,15 +215,22 @@ const Game = () => {
       {/* Game Area */}
       <View style={styles.gameArea}>
         {clouds.map(cloud => (
-          <Image
-            key={cloud.id}
-            source={
-              cloud.type === 'bonus'
-                ? require('../../assets/game/clouds/bonus.png')
-                : require('../../assets/game/clouds/normal.png')
-            }
-            style={[styles.cloud, {left: cloud.x, top: cloud.y}]}
-          />
+          <View key={cloud.id} style={[styles.cloudContainer, {left: cloud.x, top: cloud.y}]}>
+            <Image
+              source={
+                cloud.type === 'bonus'
+                  ? require('../../assets/game/clouds/bonus.png')
+                  : require('../../assets/game/clouds/normal.png')
+              }
+              style={styles.cloud}
+            />
+            {cloud.hasStar && (
+              <Image
+                source={require('../../assets/game/star.png')}
+                style={styles.cloudStar}
+              />
+            )}
+          </View>
         ))}
         <Animated.Image
           source={require('../../assets/ui/Sun.png')}
@@ -261,15 +313,25 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
   },
-  cloud: {
+  cloudContainer: {
     position: 'absolute',
-    width: 80,
-    height: 40,
+    alignItems: 'center',
+  },
+  cloud: {
+    width: CLOUD_WIDTH,
+    height: 60,
+    resizeMode: 'contain',
+  },
+  cloudStar: {
+    position: 'absolute',
+    top: -STAR_SIZE,
+    width: STAR_SIZE,
+    height: STAR_SIZE,
     resizeMode: 'contain',
   },
   sun: {
-    width: 60,
-    height: 60,
+    width: SUN_SIZE,
+    height: SUN_SIZE,
     position: 'absolute',
     resizeMode: 'contain',
   },
