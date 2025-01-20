@@ -3,7 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AppContext = createContext({
   timerHistory: {},
+  diaryEntries: [],
   saveTimer: async (title, duration) => {},
+  saveDiaryEntry: async (mood, text) => {},
+  getDiaryEntries: () => [],
+  clearDiaryEntries: async () => {},
   getTimerHistory: async title => [],
   getAllTimers: async () => {},
   clearTimerHistory: async () => {},
@@ -11,8 +15,68 @@ export const AppContext = createContext({
 
 export const AppProvider = ({children}) => {
   const [timerHistory, setTimerHistory] = useState({});
-  const [diary,setDiary] = useState([]);
-  console.log(timerHistory);
+  const [diaryEntries, setDiaryEntries] = useState([]);
+  console.log(diaryEntries);
+
+  // Load all data when app starts
+  useEffect(() => {
+    loadAllTimers();
+    loadDiaryEntries();
+  }, []);
+
+  // Load diary entries from storage
+  const loadDiaryEntries = async () => {
+    try {
+      const entries = await AsyncStorage.getItem('diary_entries');
+      if (entries) {
+        setDiaryEntries(JSON.parse(entries));
+      }
+    } catch (error) {
+      console.error('Error loading diary entries:', error);
+    }
+  };
+
+  // Save new diary entry
+  const saveDiaryEntry = async (mood, text) => {
+    try {
+      const newEntry = {
+        id: Date.now(),
+        mood,
+        text,
+        date: new Date().toISOString(),
+      };
+
+      const updatedEntries = [...diaryEntries, newEntry];
+      
+      // Save to AsyncStorage
+      await AsyncStorage.setItem('diary_entries', JSON.stringify(updatedEntries));
+      
+      // Update state
+      setDiaryEntries(updatedEntries);
+      
+      return true;
+    } catch (error) {
+      console.error('Error saving diary entry:', error);
+      return false;
+    }
+  };
+
+  // Get all diary entries
+  const getDiaryEntries = () => {
+    return diaryEntries;
+  };
+
+  // Clear all diary entries
+  const clearDiaryEntries = async () => {
+    try {
+      await AsyncStorage.removeItem('diary_entries');
+      setDiaryEntries([]);
+      return true;
+    } catch (error) {
+      console.error('Error clearing diary entries:', error);
+      return false;
+    }
+  };
 
   // Load all timer data when the app starts
   useEffect(() => {
@@ -104,7 +168,11 @@ export const AppProvider = ({children}) => {
 
   const value = {
     timerHistory,
+    diaryEntries,
     saveTimer,
+    saveDiaryEntry,
+    getDiaryEntries,
+    clearDiaryEntries,
     getTimerHistory,
     getAllTimers,
     clearTimerHistory,

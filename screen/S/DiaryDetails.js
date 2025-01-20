@@ -1,16 +1,12 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
+import {StyleSheet} from 'react-native';
+import MainLayout from '../../components/Layout/MainLayout';
+import LinearGradient from 'react-native-linear-gradient';
 
-const DiaryDetails = ({route}) => {
-  const {mood} = route.params;
-  console.log(mood);
-  return (
-    <View>
-      <Text>DiaryDetails</Text>
-    </View>
-  );
+const DiaryDetails = ({route, navigation}) => {
+  return <></>;
 };
 
-export default DiaryDetails;
-
 const styles = StyleSheet.create({});
+
+export default DiaryDetails;
