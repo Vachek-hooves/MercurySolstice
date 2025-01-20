@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,8 +7,9 @@ import CurrentDate from '../../components/ui/CurrentDate';
 
 const ActivityTimer = ({ route }) => {
   const { title } = route.params;
+  const TOTAL_SECONDS = 5 * 60; // 45 minutes in seconds
   const [isPlaying, setIsPlaying] = useState(false);
-  const [time, setTime] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
   const progressRef = useRef();
   const timerRef = useRef(null);
   
@@ -22,10 +23,21 @@ const ActivityTimer = ({ route }) => {
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const calculateProgress = () => {
+    return ((TOTAL_SECONDS - timeLeft) / TOTAL_SECONDS) * 100;
+  };
+
   const toggleTimer = () => {
     if (!isPlaying) {
       timerRef.current = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerRef.current);
+            setIsPlaying(false);
+            return 0;
+          }
+          return prevTime - 1;
+        });
       }, 1000);
     } else {
       clearInterval(timerRef.current);
@@ -36,9 +48,22 @@ const ActivityTimer = ({ route }) => {
   const resetTimer = () => {
     clearInterval(timerRef.current);
     setIsPlaying(false);
-    setTime(0);
+    setTimeLeft(TOTAL_SECONDS);
     progressRef.current?.reAnimate(0);
   };
+
+  useEffect(() => {
+    progressRef.current?.animate(calculateProgress(), 300);
+  }, [timeLeft]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <MainLayout>
@@ -65,11 +90,11 @@ const ActivityTimer = ({ route }) => {
               width={15}
               fill={0}
               rotation={0}
-              tintColor="#00B7FF"
-              backgroundColor="#19357D"
+              tintColor="#91203E"
+              backgroundColor="#A2FEFB8F"
               lineCap="round">
               {() => (
-                <Text style={styles.timerText}>{formatTime(time)}</Text>
+                <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
               )}
             </AnimatedCircularProgress>
 
