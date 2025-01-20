@@ -144,9 +144,10 @@ const styles = StyleSheet.create({
   timerWrapper: {
     marginHorizontal: 20,
     alignItems: 'center',
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: '#fff',
     borderRadius: 25,
+    backgroundColor: '#2D60E3',
   },
   timerContainer: {
     borderRadius: 20,
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: -9,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.75,
     shadowRadius: 14.5,
     elevation: 14.5,
     padding: 20,
