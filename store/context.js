@@ -11,6 +11,7 @@ export const AppContext = createContext({
 
 export const AppProvider = ({children}) => {
   const [timerHistory, setTimerHistory] = useState({});
+  const [diary,setDiary] = useState([]);
   console.log(timerHistory);
 
   // Load all timer data when the app starts
