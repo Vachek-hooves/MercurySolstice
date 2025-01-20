@@ -1,0 +1,14 @@
+import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+
+const DiaryDetails = () => {
+  return (
+    <View>
+      <Text>DiaryDetails</Text>
+    </View>
+  );
+};
+
+export default DiaryDetails;
+
+const styles = StyleSheet.create({});

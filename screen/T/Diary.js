@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
+import DiaryIcon from '../../components/icon/DiaryIcon';
 
 const moods = [
   {id: 1, name: 'Joy', image: require('../../assets/mood/joy.png')},
@@ -50,6 +51,7 @@ const Diary = () => {
 
   return (
     <MainLayout>
+      <DiaryIcon />
       <View style={styles.container}>
         <Text style={styles.title}>
           Please select one of the moods{'\n'}by tapping the corresponding
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 140,
+    paddingTop: '40%',
   },
   title: {
     fontSize: 24,
