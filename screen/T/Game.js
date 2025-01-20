@@ -14,20 +14,20 @@ import LinearGradient from 'react-native-linear-gradient';
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const LEVELS = {
-  1: {clouds: 10, speed: 1, description: 'Облака движутся медленно'},
-  2: {clouds: 15, speed: 1.5, description: 'Облака на разной высоте'},
-  3: {clouds: 20, speed: 2, description: 'Бонусные облака +3 ⭐️'},
-  4: {clouds: 25, speed: 2.5, description: 'Грозовые облака -3 ⭐️'},
-  5: {clouds: 30, speed: 3, description: 'Звёздочки +5 ⭐️'},
-  6: {clouds: 35, speed: 3.5, description: 'Повышенная сложность'},
-  7: {clouds: 40, speed: 4, description: 'Экспертный уровень'},
-  8: {clouds: 50, speed: 4.5, description: 'Мастер облаков'},
-  9: {clouds: 60, speed: 5, description: 'Покоритель небес'},
-  10: {clouds: 75, speed: 5.5, description: 'Финальное испытание'},
+  1: {clouds: 10, speed: 0.2, description: 'Облака движутся медленно'},
+  2: {clouds: 15, speed: 0.5, description: 'Облака на разной высоте'},
+  3: {clouds: 20, speed: 0.7, description: 'Бонусные облака +3 ⭐️'},
+  4: {clouds: 25, speed: 0.9, description: 'Грозовые облака -3 ⭐️'},
+  5: {clouds: 30, speed: 1.2, description: 'Звёздочки +5 ⭐️'},
+  6: {clouds: 35, speed: 1.4, description: 'Повышенная сложность'},
+  7: {clouds: 40, speed: 1.6, description: 'Экспертный уровень'},
+  8: {clouds: 50, speed: 1.9, description: 'Мастер облаков'},
+  9: {clouds: 60, speed: 2.2, description: 'Покоритель небес'},
+  10: {clouds: 75, speed: 2.7, description: 'Финальное испытание'},
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 400;
+const JUMP_HEIGHT = 350;
 const GRAVITY = 2;
 const SUN_SIZE = 60;
 const STAR_SIZE = 30;
@@ -89,29 +89,21 @@ const Game = () => {
     setClouds(initialClouds);
   };
 
-  const checkCollision = (rect1, rect2) => {
-    // Increase collision area slightly for better detection
-    const padding = 10;
-    return (
-      rect1.x < rect2.x + rect2.width + padding &&
-      rect1.x + rect1.width + padding > rect2.x &&
-      rect1.y < rect2.y + rect2.height + padding &&
-      rect1.y + rect1.height + padding > rect2.y
-    );
-  };
-
   const startGameLoop = () => {
     const updateGame = () => {
+      // Move clouds
       setClouds(prevClouds => {
         const newClouds = prevClouds.map(cloud => ({
           ...cloud,
-          x: cloud.x - 2,
+          x: cloud.x - 0.5, // Adjust speed based on level
         }));
 
+        // Remove clouds that are off screen
         const filteredClouds = newClouds.filter(
           cloud => cloud.x > -CLOUD_WIDTH,
         );
 
+        // Add new clouds if needed
         if (filteredClouds.length < 3) {
           const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
           
@@ -120,8 +112,7 @@ const Game = () => {
             x: SCREEN_WIDTH + CLOUD_WIDTH,
             y: randomHeight,
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
-            hasStar: Math.random() > 0.7,
-            collected: false, // Add collected flag
+            hasStar: Math.random() > 0.5, // 30% chance for a star
           });
         }
 
@@ -133,10 +124,10 @@ const Game = () => {
           height: SUN_SIZE,
         };
 
-        let hasCollectedStar = false; // Flag to ensure only one star collection per frame
+        let scoreIncrement = 0;
 
         filteredClouds.forEach(cloud => {
-          if (cloud.hasStar && !cloud.collected && !hasCollectedStar) {
+          if (cloud.hasStar && !collectedStars.has(cloud.id)) {
             const starBounds = {
               x: cloud.x + CLOUD_WIDTH / 2 - STAR_SIZE / 2,
               y: cloud.y - STAR_SIZE,
@@ -145,13 +136,16 @@ const Game = () => {
             };
 
             if (checkCollision(sunBounds, starBounds)) {
-              cloud.collected = true; // Mark star as collected
-              hasCollectedStar = true; // Prevent multiple collections in same frame
               setCollectedStars(prev => new Set([...prev, cloud.id]));
-              setScore(prev => prev + 10); // Add exactly 10 points
+              scoreIncrement += 10; // Add 10 points per star
+              // TODO: Play star collection sound
             }
           }
         });
+
+        if (scoreIncrement > 0) {
+          setScore(prev => prev + scoreIncrement);
+        }
 
         return filteredClouds;
       });
@@ -161,7 +155,7 @@ const Game = () => {
         sunPosition.y.setValue(
           Math.min(
             sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 450,
+            SCREEN_HEIGHT - 400,
           ),
         );
       }
@@ -170,6 +164,15 @@ const Game = () => {
     };
 
     gameLoop.current = requestAnimationFrame(updateGame);
+  };
+
+  const checkCollision = (rect1, rect2) => {
+    return (
+      rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y
+    );
   };
 
   const handleJump = () => {
@@ -227,7 +230,7 @@ const Game = () => {
               }
               style={styles.cloud}
             />
-            {cloud.hasStar && !cloud.collected && (
+            {cloud.hasStar && !collectedStars.has(cloud.id) && (
               <Image
                 source={require('../../assets/game/star.png')}
                 style={styles.cloudStar}
@@ -340,7 +343,7 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 100,
     left: 0,
     right: 0,
     alignItems: 'center',
