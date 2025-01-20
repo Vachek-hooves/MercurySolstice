@@ -3,7 +3,11 @@ import MainLayout from '../../components/Layout/MainLayout';
 import CustomBtn from '../../components/ui/CustomBtnNav';
 import CurrentDate from '../../components/ui/CurrentDate';
 
-const Timer = () => {
+
+const Timer = ({navigation}) => {
+  const handleActivity = ({title}) => {
+    navigation.navigate('ActivityTimer', {title});
+  };
   return (
     <MainLayout>
       <View style={styles.container}>
@@ -13,9 +17,9 @@ const Timer = () => {
         <Text style={styles.title}>Select your field of activity</Text>
         <View style={styles.timerContainer}>
           <View style={styles.buttonGroup}>
-            <CustomBtn title={'Work'} />
-            <CustomBtn title={'Relaxation'} />
-            <CustomBtn title={'Activities'} />
+            <CustomBtn title={'Work'} onPress={() => handleActivity({title: 'Work'})} />
+            <CustomBtn title={'Relaxation'} onPress={() => handleActivity({title: 'Relaxation'})} />
+            <CustomBtn title={'Activities'} onPress={() => handleActivity({title: 'Activities'})} />
           </View>
         </View>
       </View>

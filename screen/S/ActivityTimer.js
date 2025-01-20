@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const ActivityTimer = () => {
+const ActivityTimer = ({route}) => {
+  const {title} = route.params;
+  console.log(title);
   return (
     <View>
-      <Text>ActivityTimer</Text>
+      <Text>{title}</Text>
     </View>
   )
 }
