@@ -74,7 +74,7 @@ const Game = () => {
       {
         id: Date.now() + 1,
         x: SCREEN_WIDTH + SCREEN_WIDTH / 3,
-        y: SCREEN_HEIGHT - 650,
+        y: SCREEN_HEIGHT - 750,
         type: 'bonus',
         hasStar: false,
       },
@@ -89,63 +89,64 @@ const Game = () => {
     setClouds(initialClouds);
   };
 
+  const checkStarCollision = (sunX, sunY, starX, starY) => {
+    // Much larger vertical hit box for better collection at all heights
+    const horizontalHitDistance = 100;
+    const verticalHitDistance = 150; // Increased vertical hit distance
+    
+    const xDiff = Math.abs(sunX - starX);
+    const yDiff = Math.abs(sunY - starY);
+    
+    // Debug collision
+    console.log('Sun position:', { x: sunX, y: sunY });
+    console.log('Star position:', { x: starX, y: starY });
+    console.log('Differences:', { xDiff, yDiff });
+    
+    return xDiff < horizontalHitDistance && yDiff < verticalHitDistance;
+  };
+
   const startGameLoop = () => {
     const updateGame = () => {
-      // Move clouds
+      // Get current sun position with offset for better accuracy
+      const currentSunX = sunPosition.x._value + SUN_SIZE / 2;
+      const currentSunY = sunPosition.y._value + SUN_SIZE / 2;
+
       setClouds(prevClouds => {
         const newClouds = prevClouds.map(cloud => ({
           ...cloud,
-          x: cloud.x - 0.5, // Adjust speed based on level
+          x: cloud.x - 0.5,
         }));
 
         // Remove clouds that are off screen
-        const filteredClouds = newClouds.filter(
-          cloud => cloud.x > -CLOUD_WIDTH,
-        );
+        const filteredClouds = newClouds.filter(cloud => cloud.x > -CLOUD_WIDTH);
 
-        // Add new clouds if needed
-        if (filteredClouds.length < 3) {
-          const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
-          
-          filteredClouds.push({
+        // Add new cloud if needed
+        const lastCloud = filteredClouds[filteredClouds.length - 1];
+        if (!lastCloud || lastCloud.x < SCREEN_WIDTH - CLOUD_WIDTH * 2) {
+          const newCloud = {
             id: Date.now(),
             x: SCREEN_WIDTH + CLOUD_WIDTH,
-            y: randomHeight,
+            y: MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT),
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
-            hasStar: Math.random() > 0.2, // 30% chance for a star
-          });
+            hasStar: true,
+          };
+          filteredClouds.push(newCloud);
         }
 
-        // Check for star collection
-        const sunBounds = {
-          x: sunPosition.x._value,
-          y: sunPosition.y._value,
-          width: SUN_SIZE,
-          height: SUN_SIZE,
-        };
-
-        let scoreIncrement = 0;
-
+        // Check for star collection with adjusted positions
         filteredClouds.forEach(cloud => {
           if (cloud.hasStar && !collectedStars.has(cloud.id)) {
-            const starBounds = {
-              x: cloud.x + CLOUD_WIDTH / 2 - STAR_SIZE / 2,
-              y: cloud.y - STAR_SIZE,
-              width: STAR_SIZE,
-              height: STAR_SIZE,
-            };
+            // Adjust star position calculation
+            const starX = cloud.x + CLOUD_WIDTH / 2;
+            const starY = cloud.y - STAR_SIZE / 2; // Adjusted star Y position
 
-            if (checkCollision(sunBounds, starBounds)) {
+            if (checkStarCollision(currentSunX, currentSunY, starX, starY)) {
+              console.log('Star collected at height:', starY); // Debug log
               setCollectedStars(prev => new Set([...prev, cloud.id]));
-              scoreIncrement += 10; // Add 10 points per star
-              // TODO: Play star collection sound
+              setScore(prev => prev + 10);
             }
           }
         });
-
-        if (scoreIncrement > 0) {
-          setScore(prev => prev + scoreIncrement);
-        }
 
         return filteredClouds;
       });
@@ -164,15 +165,6 @@ const Game = () => {
     };
 
     gameLoop.current = requestAnimationFrame(updateGame);
-  };
-
-  const checkCollision = (rect1, rect2) => {
-    return (
-      rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y
-    );
   };
 
   const handleJump = () => {
