@@ -5,6 +5,7 @@ import TabNav from './NavMenu/TabNav';
 import WelcomeScreen from './screen/S/WelcomeScreen';
 import WelcomeScreen2 from './screen/S/WelcomeScreen2';
 import LogIn from './screen/S/LogIn';
+import ActivityTimer from './screen/S/ActivityTimer';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ function App() {
           <Stack.Screen name="WelcomeScreen2" component={WelcomeScreen2} />
           <Stack.Screen name="LogIn" component={LogIn} />
           <Stack.Screen name="TabNav" component={TabNav} />
+          <Stack.Screen name="ActivityTimer" component={ActivityTimer} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>
