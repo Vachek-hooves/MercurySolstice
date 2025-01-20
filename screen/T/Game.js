@@ -89,21 +89,29 @@ const Game = () => {
     setClouds(initialClouds);
   };
 
+  const checkCollision = (rect1, rect2) => {
+    // Increase collision area slightly for better detection
+    const padding = 10;
+    return (
+      rect1.x < rect2.x + rect2.width + padding &&
+      rect1.x + rect1.width + padding > rect2.x &&
+      rect1.y < rect2.y + rect2.height + padding &&
+      rect1.y + rect1.height + padding > rect2.y
+    );
+  };
+
   const startGameLoop = () => {
     const updateGame = () => {
-      // Move clouds
       setClouds(prevClouds => {
         const newClouds = prevClouds.map(cloud => ({
           ...cloud,
-          x: cloud.x - 2, // Adjust speed based on level
+          x: cloud.x - 2,
         }));
 
-        // Remove clouds that are off screen
         const filteredClouds = newClouds.filter(
           cloud => cloud.x > -CLOUD_WIDTH,
         );
 
-        // Add new clouds if needed
         if (filteredClouds.length < 3) {
           const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
           
@@ -112,7 +120,8 @@ const Game = () => {
             x: SCREEN_WIDTH + CLOUD_WIDTH,
             y: randomHeight,
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
-            hasStar: Math.random() > 0.7, // 30% chance for a star
+            hasStar: Math.random() > 0.7,
+            collected: false, // Add collected flag
           });
         }
 
@@ -124,10 +133,10 @@ const Game = () => {
           height: SUN_SIZE,
         };
 
-        let scoreIncrement = 0;
+        let hasCollectedStar = false; // Flag to ensure only one star collection per frame
 
         filteredClouds.forEach(cloud => {
-          if (cloud.hasStar && !collectedStars.has(cloud.id)) {
+          if (cloud.hasStar && !cloud.collected && !hasCollectedStar) {
             const starBounds = {
               x: cloud.x + CLOUD_WIDTH / 2 - STAR_SIZE / 2,
               y: cloud.y - STAR_SIZE,
@@ -136,16 +145,13 @@ const Game = () => {
             };
 
             if (checkCollision(sunBounds, starBounds)) {
+              cloud.collected = true; // Mark star as collected
+              hasCollectedStar = true; // Prevent multiple collections in same frame
               setCollectedStars(prev => new Set([...prev, cloud.id]));
-              scoreIncrement += 10; // Add 10 points per star
-              // TODO: Play star collection sound
+              setScore(prev => prev + 10); // Add exactly 10 points
             }
           }
         });
-
-        if (scoreIncrement > 0) {
-          setScore(prev => prev + scoreIncrement);
-        }
 
         return filteredClouds;
       });
@@ -155,7 +161,7 @@ const Game = () => {
         sunPosition.y.setValue(
           Math.min(
             sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 400,
+            SCREEN_HEIGHT - 450,
           ),
         );
       }
@@ -164,15 +170,6 @@ const Game = () => {
     };
 
     gameLoop.current = requestAnimationFrame(updateGame);
-  };
-
-  const checkCollision = (rect1, rect2) => {
-    return (
-      rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y
-    );
   };
 
   const handleJump = () => {
@@ -230,7 +227,7 @@ const Game = () => {
               }
               style={styles.cloud}
             />
-            {cloud.hasStar && !collectedStars.has(cloud.id) && (
+            {cloud.hasStar && !cloud.collected && (
               <Image
                 source={require('../../assets/game/star.png')}
                 style={styles.cloudStar}
@@ -343,7 +340,7 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 60,
     left: 0,
     right: 0,
     alignItems: 'center',
