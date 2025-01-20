@@ -27,12 +27,12 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 370;
+const JUMP_HEIGHT = 400;
 const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
 const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
-const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
+const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 500;
 
 const Game = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -92,7 +92,7 @@ const Game = () => {
   const checkStarCollision = (sunX, sunY, starX, starY) => {
     // Much larger vertical hit box for better collection at all heights
     const horizontalHitDistance = 100;
-    const verticalHitDistance = 150; // Increased vertical hit distance
+    const verticalHitDistance = 170; // Increased vertical hit distance
     
     const xDiff = Math.abs(sunX - starX);
     const yDiff = Math.abs(sunY - starY);
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 50,
     left: 0,
     right: 0,
     alignItems: 'center',
