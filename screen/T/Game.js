@@ -112,7 +112,7 @@ const Game = () => {
             x: SCREEN_WIDTH + CLOUD_WIDTH,
             y: randomHeight,
             type: Math.random() > 0.8 ? 'bonus' : 'normal',
-            hasStar: Math.random() > 0.5, // 30% chance for a star
+            hasStar: Math.random() > 0.2, // 30% chance for a star
           });
         }
 
