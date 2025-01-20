@@ -22,7 +22,7 @@ export default CustomBtn;
 const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
-    width: 280,
+    width: 250,
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,

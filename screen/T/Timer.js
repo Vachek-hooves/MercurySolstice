@@ -1,14 +1,57 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import MainLayout from '../../components/Layout/MainLayout';
+import CustomBtn from '../../components/ui/CustomBtnNav';
+import CurrentDate from '../../components/ui/CurrentDate';
 
 const Timer = () => {
   return (
-    <View>
-      <Text>Timer</Text>
-    </View>
+    <MainLayout>
+      <View style={styles.container}>
+        <View style={styles.dateWrapper}>
+          <CurrentDate />
+        </View>
+        <Text style={styles.title}>Select your field of activity</Text>
+        <View style={styles.timerContainer}>
+          <View style={styles.buttonGroup}>
+            <CustomBtn title={'Work'} />
+            <CustomBtn title={'Relaxation'} />
+            <CustomBtn title={'Activities'} />
+          </View>
+        </View>
+      </View>
+    </MainLayout>
   );
 };
 
 export default Timer;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
+  dateWrapper: {
+    position: 'absolute',
+    top: 70,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  title: {
+    color: '#FFDD56',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 200,
+    marginBottom: 40,
+  },
+  timerContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  buttonGroup: {
+    gap: 30,
+  },
+});
