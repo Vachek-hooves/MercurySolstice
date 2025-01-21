@@ -11,17 +11,25 @@ export const AppContext = createContext({
   getTimerHistory: async title => [],
   getAllTimers: async () => {},
   clearTimerHistory: async () => {},
+  totalScore: 0,
+  highestLevel: 1,
+  gamesPlayed: 0,
+  saveGameProgress: async (score, level) => {},
 });
 
 export const AppProvider = ({children}) => {
   const [timerHistory, setTimerHistory] = useState({});
   const [diaryEntries, setDiaryEntries] = useState([]);
-  console.log(diaryEntries);
+  const [totalScore, setTotalScore] = useState(0);
+  const [highestLevel, setHighestLevel] = useState(1);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  console.log(totalScore, highestLevel, gamesPlayed);
 
   // Load all data when app starts
   useEffect(() => {
     loadAllTimers();
     loadDiaryEntries();
+    loadSavedData();
   }, []);
 
   // Load diary entries from storage
@@ -47,13 +55,16 @@ export const AppProvider = ({children}) => {
       };
 
       const updatedEntries = [...diaryEntries, newEntry];
-      
+
       // Save to AsyncStorage
-      await AsyncStorage.setItem('diary_entries', JSON.stringify(updatedEntries));
-      
+      await AsyncStorage.setItem(
+        'diary_entries',
+        JSON.stringify(updatedEntries),
+      );
+
       // Update state
       setDiaryEntries(updatedEntries);
-      
+
       return true;
     } catch (error) {
       console.error('Error saving diary entry:', error);
@@ -166,6 +177,48 @@ export const AppProvider = ({children}) => {
     }
   };
 
+  const loadSavedData = async () => {
+    try {
+      const savedData = await AsyncStorage.getItem('gameProgress');
+      if (savedData) {
+        const {totalScore, highestLevel, gamesPlayed} = JSON.parse(savedData);
+        setTotalScore(totalScore || 0);
+        setHighestLevel(highestLevel || 1);
+        setGamesPlayed(gamesPlayed || 0);
+      }
+    } catch (error) {
+      console.error('Error loading saved data:', error);
+    }
+  };
+
+  const saveGameProgress = async (score, level) => {
+    try {
+      const newTotalScore = totalScore + score;
+      const newHighestLevel = Math.max(highestLevel, level);
+      const newGamesPlayed = gamesPlayed + 1;
+
+      // Save to state
+      setTotalScore(newTotalScore);
+      setHighestLevel(newHighestLevel);
+      setGamesPlayed(newGamesPlayed);
+
+      // Save to AsyncStorage
+      await AsyncStorage.setItem(
+        'gameProgress',
+        JSON.stringify({
+          totalScore: newTotalScore,
+          highestLevel: newHighestLevel,
+          gamesPlayed: newGamesPlayed,
+        }),
+      );
+
+      return newTotalScore; // Return for immediate use
+    } catch (error) {
+      console.error('Error saving game progress:', error);
+      return totalScore; // Return current total if save fails
+    }
+  };
+
   const value = {
     timerHistory,
     diaryEntries,
@@ -176,6 +229,10 @@ export const AppProvider = ({children}) => {
     getTimerHistory,
     getAllTimers,
     clearTimerHistory,
+    totalScore,
+    highestLevel,
+    gamesPlayed,
+    saveGameProgress,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

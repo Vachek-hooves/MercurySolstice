@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
+  Alert,
 } from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import LinearGradient from 'react-native-linear-gradient';
+import {useAppContext} from '../../store/context';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -31,11 +33,12 @@ const JUMP_HEIGHT = 400;
 const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
-const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720; // Higher position for clouds
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 550;
 
-const Game = () => {
-  const [currentLevel, setCurrentLevel] = useState(0);
+const Game = ({navigation}) => {
+  const {saveGameProgress} = useAppContext();
+  const [currentLevel, setCurrentLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [clouds, setClouds] = useState([]);
@@ -50,6 +53,7 @@ const Game = () => {
   const jumpAnimation = useRef(null);
   const isJumping = useRef(false);
   const gameLoop = useRef(null);
+  const [gameEnded, setGameEnded] = useState(false);
   // console.log(clouds, 'clouds');
 
   // Get current level settings with safety check
@@ -63,9 +67,10 @@ const Game = () => {
   }, [currentLevel, levelSettings, cloudsGenerated]);
 
   const spawnNewCloud = () => {
-    const randomHeight = MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
+    const randomHeight =
+      MIN_CLOUD_HEIGHT + Math.random() * (MAX_CLOUD_HEIGHT - MIN_CLOUD_HEIGHT);
     setCloudsGenerated(prev => prev + 1);
-    
+
     return {
       id: Date.now() + Math.random(),
       x: SCREEN_WIDTH + CLOUD_WIDTH,
@@ -77,9 +82,10 @@ const Game = () => {
 
   // Initialize game with clouds based on current level
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && !gameEnded) {
       setCurrentLevel(0);
       setCloudsGenerated(0);
+      setScore(0);
       
       const initialClouds = Array(LEVELS[1].clouds)
         .fill()
@@ -87,7 +93,7 @@ const Game = () => {
           ...spawnNewCloud(),
           id: Date.now() + index,
           x: SCREEN_WIDTH + (CLOUD_WIDTH * 2 * index),
-          hasStar: Math.random() > 0.5, // 50% chance for initial clouds too
+          hasStar: Math.random() > 0.5,
         }));
       
       setClouds(initialClouds);
@@ -102,15 +108,15 @@ const Game = () => {
     // Much larger vertical hit box for better collection at all heights
     const horizontalHitDistance = 100;
     const verticalHitDistance = 180; // Increased vertical hit distance
-    
+
     const xDiff = Math.abs(sunX - starX);
     const yDiff = Math.abs(sunY - starY);
-    
+
     // Debug collision
     // console.log('Sun position:', { x: sunX, y: sunY });
     // console.log('Star position:', { x: starX, y: starY });
     // console.log('Differences:', { xDiff, yDiff });
-    
+
     return xDiff < horizontalHitDistance && yDiff < verticalHitDistance;
   };
 
@@ -122,7 +128,9 @@ const Game = () => {
           x: cloud.x - levelSettings.speed,
         }));
 
-        const filteredClouds = newClouds.filter(cloud => cloud.x > -CLOUD_WIDTH);
+        const filteredClouds = newClouds.filter(
+          cloud => cloud.x > -CLOUD_WIDTH,
+        );
 
         // Add new cloud if needed, maintaining level cloud count
         if (filteredClouds.length < levelSettings.clouds) {
@@ -139,7 +147,14 @@ const Game = () => {
             const starX = cloud.x + CLOUD_WIDTH / 2;
             const starY = cloud.y - STAR_SIZE / 2; // Adjusted star Y position
 
-            if (checkStarCollision(sunPosition.x._value + SUN_SIZE / 2, sunPosition.y._value + SUN_SIZE / 2, starX, starY)) {
+            if (
+              checkStarCollision(
+                sunPosition.x._value + SUN_SIZE / 2,
+                sunPosition.y._value + SUN_SIZE / 2,
+                starX,
+                starY,
+              )
+            ) {
               // console.log('Star collected at height:', starY); // Debug log
               setCollectedStars(prev => new Set([...prev, cloud.id]));
               setScore(prev => prev + 10);
@@ -153,10 +168,7 @@ const Game = () => {
       // Apply gravity if not jumping
       if (!isJumping.current) {
         sunPosition.y.setValue(
-          Math.min(
-            sunPosition.y._value + GRAVITY,
-            SCREEN_HEIGHT - 400,
-          ),
+          Math.min(sunPosition.y._value + GRAVITY, SCREEN_HEIGHT - 400),
         );
       }
 
@@ -192,11 +204,49 @@ const Game = () => {
   useEffect(() => {
     const maxLevel = Object.keys(LEVELS).length;
     if (cloudsGenerated >= levelSettings.clouds && currentLevel < maxLevel) {
-      console.log(`Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`);
+      console.log(
+        `Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`,
+      );
       setCurrentLevel(prev => Math.min(prev + 1, maxLevel));
       setCloudsGenerated(0);
     }
   }, [cloudsGenerated, currentLevel, levelSettings.clouds]);
+
+  // Save progress when game ends
+  const handleGameEnd = async () => {
+    if (!gameEnded && isPlaying) {
+      setIsPlaying(false);
+      setGameEnded(true);
+      const newTotalScore = await saveGameProgress(score, currentLevel);
+      console.log('Game ended - Total Score:', newTotalScore);
+      
+      Alert.alert(
+        'Game Over!',
+        `Level Reached: ${currentLevel}\nScore: ${score}\nTotal Score: ${newTotalScore}`,
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+    }
+  };
+
+  // Call handleGameEnd when appropriate (e.g., collision with enemy, game completion)
+  useEffect(() => {
+    if (currentLevel === Object.keys(LEVELS).length) {
+      // Game completed - all levels finished
+      handleGameEnd();
+    }
+  }, [currentLevel]);
+
+  // Add game over condition for no more clouds - only check if game is actually playing
+  useEffect(() => {
+    if (clouds.length === 0 && isPlaying && cloudsGenerated > 0) {
+      handleGameEnd();
+    }
+  }, [clouds, isPlaying, cloudsGenerated]);
 
   return (
     // <MainLayout>
@@ -222,7 +272,9 @@ const Game = () => {
       {/* Game Area */}
       <View style={styles.gameArea}>
         {clouds.map(cloud => (
-          <View key={cloud.id} style={[styles.cloudContainer, {left: cloud.x, top: cloud.y}]}>
+          <View
+            key={cloud.id}
+            style={[styles.cloudContainer, {left: cloud.x, top: cloud.y}]}>
             <Image
               source={
                 cloud.type === 'bonus'
