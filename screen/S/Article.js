@@ -17,6 +17,7 @@ const Article = () => {
 
   const renderArticleBox = (article, index) => {
     const isUnlocked = totalScore >= SCORE_TO_UNLOCK * (index + 1);
+    console.log(isUnlocked);
 
     return (
       <View key={article.id} style={styles.articleBox}>
