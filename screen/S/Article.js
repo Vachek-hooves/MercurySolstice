@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,45 +9,107 @@ import {
 } from 'react-native';
 import {articlesData} from '../../data/articlesData';
 import {useAppContext} from '../../store/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Article = () => {
+const Article = ({navigation}) => {
   const {totalScore} = useAppContext();
   const SCORE_TO_UNLOCK = 1500;
-  console.log(totalScore);
+  const [unlockedArticles, setUnlockedArticles] = useState(new Set());
+
+  // Load unlocked articles from storage on mount
+  useEffect(() => {
+    loadUnlockedArticles();
+  }, []);
+
+  const loadUnlockedArticles = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('unlockedArticles');
+      if (saved) {
+        setUnlockedArticles(new Set(JSON.parse(saved)));
+      }
+    } catch (error) {
+      console.error('Error loading unlocked articles:', error);
+    }
+  };
+
+  const saveUnlockedArticles = async (newSet) => {
+    try {
+      await AsyncStorage.setItem('unlockedArticles', JSON.stringify([...newSet]));
+    } catch (error) {
+      console.error('Error saving unlocked articles:', error);
+    }
+  };
+
+  const handleArticlePress = async (article, index) => {
+    const requiredScore = SCORE_TO_UNLOCK ;
+    
+    console.log('Attempting to open article:', {
+      articleId: article.id,
+      totalScore,
+      requiredScore,
+      isUnlocked: unlockedArticles.has(article.id)
+    });
+    
+    if (totalScore >= requiredScore && !unlockedArticles.has(article.id)) {
+      console.log('Unlocking article:', article.id);
+      const newUnlockedArticles = new Set(unlockedArticles);
+      newUnlockedArticles.add(article.id);
+      setUnlockedArticles(newUnlockedArticles);
+      await saveUnlockedArticles(newUnlockedArticles);
+      // Here you can add navigation to article detail screen
+      // navigation.navigate('ArticleDetail', { article });
+    } else if (unlockedArticles.has(article.id)) {
+      // Navigate to article detail if already unlocked
+      // navigation.navigate('ArticleDetail', { article });
+      console.log('Opening unlocked article:', article.id);
+    } else {
+      console.log('Not enough score to unlock article:', article.id, 
+        'Required:', requiredScore, 
+        'Current:', totalScore);
+    }
+  };
 
   const renderArticleBox = (article, index) => {
-    const isUnlocked = totalScore >= SCORE_TO_UNLOCK * (index + 1);
-    console.log(isUnlocked);
-
+    const isUnlocked = unlockedArticles.has(article.id);
+    const requiredScore = SCORE_TO_UNLOCK ;
+    const canUnlock = totalScore >= requiredScore;
+    
     return (
-      <View key={article.id} style={styles.articleBox}>
+      <TouchableOpacity
+        key={article.id}
+        style={styles.articleBox}
+        onPress={() => navigation.navigate('ReadArticleDetails', {article})}
+        disabled={!canUnlock && !isUnlocked}>
         <Image
           source={require('../../assets/ui/book.png')}
           style={styles.bookImage}
         />
-        <TouchableOpacity
+        <TouchableOpacity onPress={() => handleArticlePress(article, index)}
           style={[
             styles.scoreButton,
             isUnlocked ? styles.unlockedButton : styles.lockedButton,
-          ]}
-          disabled={!isUnlocked}>
+          ]}>
           {isUnlocked ? (
             <View style={styles.scoreContainer}>
-              <Text style={styles.scoreText}>25</Text>
+              <Text style={styles.scoreText}>Read</Text>
               <Image
                 source={require('../../assets/ui/star.png')}
                 style={styles.starIcon}
               />
             </View>
           ) : (
-            // <Image
-            //   source={require('../../assets/ui/lock.png')}
-            //   style={styles.lockIcon}
-            // />
-            <Text>Locked</Text>
+            <View style={styles.scoreContainer}>
+              <Text style={styles.scoreText}>
+                {requiredScore}
+              </Text>
+              <Image
+                source={require('../../assets/ui/lock.png')}
+                style={styles.lockIcon}
+              />
+            </View>
           )}
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -65,9 +127,7 @@ const Article = () => {
       {/* Articles Grid */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.articlesGrid}>
-          {articlesData.map((article, index) =>
-            renderArticleBox(article, index),
-          )}
+          {articlesData.map((article, index) => renderArticleBox(article, index))}
         </View>
       </ScrollView>
     </View>

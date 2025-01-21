@@ -10,6 +10,7 @@ import DiaryDetails from './screen/S/DiaryDetails';
 import AddDiary from './screen/S/AddDiary';
 import {Game} from './screen/T';
 import Article from './screen/S/Article';
+import ReadArticleDetails from './screen/S/ReadArticleDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,10 @@ function App() {
           <Stack.Screen name="AddDiary" component={AddDiary} />
           <Stack.Screen name="Game" component={Game} />
           <Stack.Screen name="Article" component={Article} />
+          <Stack.Screen
+            name="ReadArticleDetails"
+            component={ReadArticleDetails}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>
