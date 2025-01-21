@@ -7,6 +7,7 @@ import {
   Modal,
   Image,
   Animated,
+  ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {dailyAdvice} from '../../data/advice';
@@ -71,8 +72,8 @@ const Advice = () => {
         {left: '45%', top: '85%'},
       ],
       sunPosition: {
-        left: '8%',
-        top: '95%',
+        left: '0%',
+        top: '100%',
       },
     },
   };
@@ -120,7 +121,8 @@ const Advice = () => {
   );
 
   const renderAdviceButtons = () => (
-    <View style={styles.adviceContainer}>
+    <ScrollView contentContainerStyle={styles.adviceContainer}>
+      {/* <View style={styles.adviceContainer}> */}
       {dailyAdvice[selectedPeriod].advices.map(advice => (
         <TouchableOpacity
           key={advice.id}
@@ -153,7 +155,9 @@ const Advice = () => {
           },
         ]}
       />
-    </View>
+      {/* </View> */}
+      <View style={{height: 50}} />
+    </ScrollView>
   );
 
   return (
@@ -183,7 +187,10 @@ const Advice = () => {
                 </>
               )}
             </LinearGradient>
-            <Image source={require('../../assets/ui/smallSun.png')} style={styles.modalSun} />
+            <Image
+              source={require('../../assets/ui/smallSun.png')}
+              style={styles.modalSun}
+            />
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               style={styles.closeButton}>
@@ -232,8 +239,9 @@ const styles = StyleSheet.create({
     color: '#001432',
   },
   adviceContainer: {
-    flex: 1,
+    // flex: 1,
     position: 'relative',
+    height: '90%',
   },
   adviceButtonWrapper: {
     position: 'absolute',
@@ -270,7 +278,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   modalContent: {
-    
     borderRadius: 20,
     width: '80%',
     position: 'relative',
@@ -300,7 +307,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'left',
     padding: 25,
-    letterSpacing:1
+    letterSpacing: 1,
   },
   closeButton: {
     position: 'absolute',

@@ -74,9 +74,9 @@ const LogIn = ({navigation}) => {
             source={profileImage ? {uri: profileImage} : defaultProfile}
             style={styles.profileImage}
           />
-          <View style={styles.imageOverlay}>
+          {/* <View style={styles.imageOverlay}>
             <Text style={styles.changePhotoText}>Change Photo</Text>
-          </View>
+          </View> */}
         </TouchableOpacity>
 
         <View style={styles.inputContainer}>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 60,
-    borderWidth: 2,
+    // borderWidth: 2,
     // borderColor: '#FFD700',
   },
   imageOverlay: {
@@ -124,8 +124,10 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 8,
-    borderBottomLeftRadius: 60,
+    borderBottomLeftRadius: 160,
     borderBottomRightRadius: 60,
+    width: '50%',
+    // marginHorizontal: 40,
   },
   changePhotoText: {
     color: 'white',

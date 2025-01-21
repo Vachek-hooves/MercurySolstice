@@ -319,12 +319,12 @@ const Game = ({navigation}) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.soundButton}>
+        {/* <TouchableOpacity style={styles.soundButton}>
           <Image
             source={require('../../assets/icons/sound.png')}
             style={styles.soundIcon}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.levelText}>Level {currentLevel}</Text>
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreText}>{score}</Text>

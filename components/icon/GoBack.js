@@ -7,8 +7,7 @@ const GoBack = () => {
   return (
     <TouchableOpacity
       onPress={() => navigation.goBack()}
-      style={styles.container}
-    >
+      style={styles.container}>
       <Image
         source={require('../../assets/icons/back.png')}
         style={styles.icon}
@@ -23,7 +22,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 60,
-    right: 60,
+    right: '12%',
   },
   icon: {
     width: 40,

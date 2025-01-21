@@ -32,9 +32,12 @@ const Article = ({navigation}) => {
     }
   };
 
-  const saveUnlockedArticles = async (newSet) => {
+  const saveUnlockedArticles = async newSet => {
     try {
-      await AsyncStorage.setItem('unlockedArticles', JSON.stringify([...newSet]));
+      await AsyncStorage.setItem(
+        'unlockedArticles',
+        JSON.stringify([...newSet]),
+      );
     } catch (error) {
       console.error('Error saving unlocked articles:', error);
     }
@@ -42,22 +45,22 @@ const Article = ({navigation}) => {
 
   const handleArticlePress = async (article, index) => {
     const requiredScore = SCORE_TO_UNLOCK;
-    
+
     console.log('Attempting to open article:', {
       articleId: article.id,
       totalScore,
       requiredScore,
-      isUnlocked: unlockedArticles.has(article.id)
+      isUnlocked: unlockedArticles.has(article.id),
     });
-    
+
     if (totalScore >= requiredScore && !unlockedArticles.has(article.id)) {
       console.log('Unlocking article:', article.id);
-      
+
       // Deduct score first
       const newTotalScore = await deductScore(SCORE_TO_UNLOCK);
       console.log('Score deducted:', {
         deducted: SCORE_TO_UNLOCK,
-        newTotalScore
+        newTotalScore,
       });
 
       // Then unlock the article
@@ -65,7 +68,7 @@ const Article = ({navigation}) => {
       newUnlockedArticles.add(article.id);
       setUnlockedArticles(newUnlockedArticles);
       await saveUnlockedArticles(newUnlockedArticles);
-      
+
       // Here you can add navigation to article detail screen
       // navigation.navigate('ArticleDetail', { article });
     } else if (unlockedArticles.has(article.id)) {
@@ -73,9 +76,14 @@ const Article = ({navigation}) => {
       // navigation.navigate('ArticleDetail', { article });
       console.log('Opening unlocked article:', article.id);
     } else {
-      console.log('Not enough score to unlock article:', article.id, 
-        'Required:', requiredScore, 
-        'Current:', totalScore);
+      console.log(
+        'Not enough score to unlock article:',
+        article.id,
+        'Required:',
+        requiredScore,
+        'Current:',
+        totalScore,
+      );
     }
   };
 
@@ -83,7 +91,7 @@ const Article = ({navigation}) => {
     const isUnlocked = unlockedArticles.has(article.id);
     const requiredScore = SCORE_TO_UNLOCK;
     const canUnlock = totalScore >= requiredScore;
-    
+
     return (
       <TouchableOpacity
         key={article.id}
@@ -94,7 +102,8 @@ const Article = ({navigation}) => {
           source={require('../../assets/ui/book.png')}
           style={styles.bookImage}
         />
-        <TouchableOpacity onPress={() => handleArticlePress(article, index)}
+        <TouchableOpacity
+          onPress={() => handleArticlePress(article, index)}
           style={[
             styles.scoreButton,
             isUnlocked ? styles.unlockedButton : styles.lockedButton,
@@ -109,9 +118,7 @@ const Article = ({navigation}) => {
             </View>
           ) : (
             <View style={styles.scoreContainer}>
-              <Text style={styles.scoreText}>
-                {requiredScore}
-              </Text>
+              <Text style={styles.scoreText}>{requiredScore}</Text>
               <Image
                 source={require('../../assets/ui/lock.png')}
                 style={styles.lockIcon}
@@ -137,7 +144,9 @@ const Article = ({navigation}) => {
       {/* Articles Grid */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.articlesGrid}>
-          {articlesData.map((article, index) => renderArticleBox(article, index))}
+          {articlesData.map((article, index) =>
+            renderArticleBox(article, index),
+          )}
         </View>
       </ScrollView>
     </View>
@@ -173,10 +182,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 16,
+    gap: 30,
   },
   articleBox: {
-    width: '48%',
+    width: '46%',
     aspectRatio: 1,
     backgroundColor: '#1E4B8C',
     borderRadius: 16,

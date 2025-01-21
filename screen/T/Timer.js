@@ -1,8 +1,7 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import CustomBtn from '../../components/ui/CustomBtnNav';
 import CurrentDate from '../../components/ui/CurrentDate';
-
 
 const Timer = ({navigation}) => {
   const handleActivity = ({title}) => {
@@ -10,19 +9,30 @@ const Timer = ({navigation}) => {
   };
   return (
     <MainLayout>
-      <View style={styles.container}>
-        <View style={styles.dateWrapper}>
-          <CurrentDate />
-        </View>
-        <Text style={styles.title}>Select your field of activity</Text>
-        <View style={styles.timerContainer}>
-          <View style={styles.buttonGroup}>
-            <CustomBtn title={'Work'} onPress={() => handleActivity({title: 'Work'})} />
-            <CustomBtn title={'Relaxation'} onPress={() => handleActivity({title: 'Relaxation'})} />
-            <CustomBtn title={'Activities'} onPress={() => handleActivity({title: 'Activities'})} />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* <View style={styles.container}> */}
+          <View style={styles.dateWrapper}>
+            <CurrentDate />
           </View>
-        </View>
-      </View>
+          <Text style={styles.title}>Select your field of activity</Text>
+          <View style={styles.timerContainer}>
+            <View style={styles.buttonGroup}>
+              <CustomBtn
+                title={'Work'}
+                onPress={() => handleActivity({title: 'Work'})}
+              />
+              <CustomBtn
+                title={'Relaxation'}
+                onPress={() => handleActivity({title: 'Relaxation'})}
+              />
+              <CustomBtn
+                title={'Activities'}
+                onPress={() => handleActivity({title: 'Activities'})}
+              />
+            </View>
+          </View>
+        {/* </View> */}
+      </ScrollView>
     </MainLayout>
   );
 };

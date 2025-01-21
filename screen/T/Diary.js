@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import DiaryIcon from '../../components/icon/DiaryIcon';
 
@@ -57,21 +64,27 @@ const Diary = ({navigation}) => {
 
   return (
     <MainLayout>
-      <DiaryIcon />
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
+        <DiaryIcon />
+        {/* <View style={styles.container}> */}
         <Text style={styles.title}>
           Please select one of the moods{'\n'}by tapping the corresponding
           emoji.
         </Text>
         {renderMoodGrid()}
-      </View>
+        {/* </View> */}
+        {/* <View style={{height:100}}/> */}
+        <View style={{height: 50}} />
+      </ScrollView>
     </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     paddingHorizontal: 20,
     paddingTop: '40%',
   },
