@@ -14,16 +14,16 @@ import LinearGradient from 'react-native-linear-gradient';
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const LEVELS = {
-  1: {clouds: 10, speed: 0.2, description: 'Облака движутся медленно'},
-  2: {clouds: 15, speed: 0.5, description: 'Облака на разной высоте'},
-  3: {clouds: 20, speed: 0.7, description: 'Бонусные облака +3 ⭐️'},
-  4: {clouds: 25, speed: 0.9, description: 'Грозовые облака -3 ⭐️'},
-  5: {clouds: 30, speed: 1.2, description: 'Звёздочки +5 ⭐️'},
-  6: {clouds: 35, speed: 1.4, description: 'Повышенная сложность'},
-  7: {clouds: 40, speed: 1.6, description: 'Экспертный уровень'},
-  8: {clouds: 50, speed: 1.9, description: 'Мастер облаков'},
-  9: {clouds: 60, speed: 2.2, description: 'Покоритель небес'},
-  10: {clouds: 75, speed: 2.7, description: 'Финальное испытание'},
+  1: {clouds: 10, speed: 0.2, description: 'Clouds move slowly'},
+  2: {clouds: 15, speed: 0.5, description: 'Clouds at different heights'},
+  3: {clouds: 20, speed: 0.7, description: 'Bonus clouds +3 ⭐️'},
+  4: {clouds: 25, speed: 0.9, description: 'Thunderclouds -3 ⭐️'},
+  5: {clouds: 30, speed: 1.2, description: 'Stars +5 ⭐️'},
+  6: {clouds: 35, speed: 1.4, description: 'Increased difficulty'},
+  7: {clouds: 40, speed: 1.6, description: 'Expert level'},
+  8: {clouds: 50, speed: 1.9, description: 'Cloud master'},
+  9: {clouds: 60, speed: 2.2, description: 'Sky conqueror'},
+  10: {clouds: 75, speed: 2.7, description: 'Final challenge'},
 };
 
 const CLOUD_WIDTH = 120;
@@ -32,7 +32,7 @@ const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
 const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720;// Higher position for clouds
-const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 500;
+const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 550;
 
 const Game = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -83,6 +83,13 @@ const Game = () => {
         x: SCREEN_WIDTH + (SCREEN_WIDTH / 3) * 2,
         y: SCREEN_HEIGHT - 550,
         type: 'normal',
+        hasStar: false,
+      },
+      {
+        id: Date.now() + 3,
+        x: SCREEN_WIDTH + (SCREEN_WIDTH / 3) * 3,
+        y: SCREEN_HEIGHT - 600,
+        type: 'bonus',
         hasStar: false,
       },
     ];
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 40,
     left: 0,
     right: 0,
     alignItems: 'center',
