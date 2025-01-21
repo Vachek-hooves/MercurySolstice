@@ -3,16 +3,16 @@ workflows:
     name: Mercury Solstice
     max_build_duration: 120
     integrations:
-      app_store_connect:
+      app_store_connect: MercurySolsticeCodemagic
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.mercury.solstice
       vars:
-        APP_STORE_APPLE_ID:
-        BUNDLE_ID:
-        XCODE_WORKSPACE:
-        CODE_SCHEME:
+        APP_STORE_APPLE_ID: 6740814300
+        BUNDLE_ID: 'com.mercury.solstice'
+        XCODE_WORKSPACE: 'MercurySolstice.xcworkspace'
+        CODE_SCHEME: 'MercurySolstice'
     scripts:
       - name: Install node modules
         script: |
