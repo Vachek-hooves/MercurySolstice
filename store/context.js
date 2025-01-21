@@ -16,6 +16,7 @@ export const AppContext = createContext({
   gamesPlayed: 0,
   saveGameProgress: async (score, level) => {},
   deductScore: async (amount) => {},
+  resetGameProgress: async () => {},
 });
 
 export const AppProvider = ({children}) => {
@@ -240,6 +241,25 @@ export const AppProvider = ({children}) => {
     }
   };
 
+  const resetGameProgress = async () => {
+    try {
+      // Reset all state values
+      setTotalScore(0);
+      setHighestLevel(1);
+      setGamesPlayed(0);
+
+      // Clear storage
+      await AsyncStorage.multiRemove([
+        'gameProgress',
+        'unlockedArticles'
+      ]);
+
+      console.log('Game progress reset successfully');
+    } catch (error) {
+      console.error('Error resetting game progress:', error);
+    }
+  };
+
   const value = {
     timerHistory,
     diaryEntries,
@@ -255,6 +275,7 @@ export const AppProvider = ({children}) => {
     gamesPlayed,
     saveGameProgress,
     deductScore,
+    resetGameProgress,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
