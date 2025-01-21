@@ -6,7 +6,9 @@ import ReadArticleBtn from '../../components/ui/ReadArticleBtn';
 const GameWelcomeScreen = ({navigation}) => {
   return (
     <MainLayout>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.sunContainer}>
           <Image
             source={require('../../assets/ui/Sun.png')}
@@ -33,16 +35,18 @@ const GameWelcomeScreen = ({navigation}) => {
         {/* Radiance Depot Button */}
         <ReadArticleBtn />
       </ScrollView>
+      <View style={{height: 90}} />
     </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     // backgroundColor: '#002B5C', // Dark blue background
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: '15%',
   },
   sunContainer: {
     marginBottom: 20,
