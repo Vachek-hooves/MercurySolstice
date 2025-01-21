@@ -37,7 +37,7 @@ const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720; // Higher position for clouds
 const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 550;
 
 const Game = ({navigation}) => {
-  const {saveGameProgress} = useAppContext();
+  const {saveGameProgress, totalScore} = useAppContext();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -54,8 +54,8 @@ const Game = ({navigation}) => {
   const isJumping = useRef(false);
   const gameLoop = useRef(null);
   const [gameEnded, setGameEnded] = useState(false);
-  // console.log(clouds, 'clouds');
-
+  const [pendingScore, setPendingScore] = useState(null);
+  // console.log(totalScore);
   // Get current level settings with safety check
   const levelSettings = LEVELS[currentLevel] || LEVELS[1];
 
@@ -64,7 +64,20 @@ const Game = ({navigation}) => {
     console.log('Current Level:', currentLevel);
     console.log('Level Settings:', levelSettings);
     console.log('Clouds Generated:', cloudsGenerated);
-  }, [currentLevel, levelSettings, cloudsGenerated]);
+    console.log('Current game state:', {
+      score,
+      totalScore,
+      pendingScore,
+      currentLevel,
+    });
+  }, [
+    currentLevel,
+    levelSettings,
+    cloudsGenerated,
+    score,
+    totalScore,
+    pendingScore,
+  ]);
 
   const spawnNewCloud = () => {
     const randomHeight =
@@ -86,16 +99,16 @@ const Game = ({navigation}) => {
       setCurrentLevel(0);
       setCloudsGenerated(0);
       setScore(0);
-      
+
       const initialClouds = Array(LEVELS[1].clouds)
         .fill()
         .map((_, index) => ({
           ...spawnNewCloud(),
           id: Date.now() + index,
-          x: SCREEN_WIDTH + (CLOUD_WIDTH * 2 * index),
+          x: SCREEN_WIDTH + CLOUD_WIDTH * 2 * index,
           hasStar: Math.random() > 0.5,
         }));
-      
+
       setClouds(initialClouds);
       startGameLoop();
     }
@@ -140,12 +153,11 @@ const Game = ({navigation}) => {
           }
         }
 
-        // Check for star collection with adjusted positions
+        // Check for star collection
         filteredClouds.forEach(cloud => {
           if (cloud.hasStar && !collectedStars.has(cloud.id)) {
-            // Adjust star position calculation
             const starX = cloud.x + CLOUD_WIDTH / 2;
-            const starY = cloud.y - STAR_SIZE / 2; // Adjusted star Y position
+            const starY = cloud.y - STAR_SIZE / 2;
 
             if (
               checkStarCollision(
@@ -155,9 +167,13 @@ const Game = ({navigation}) => {
                 starY,
               )
             ) {
-              // console.log('Star collected at height:', starY); // Debug log
               setCollectedStars(prev => new Set([...prev, cloud.id]));
-              setScore(prev => prev + 10);
+              // Update score and queue the save
+              setScore(prevScore => {
+                const newScore = prevScore + 10;
+                setPendingScore(newScore);
+                return newScore;
+              });
             }
           }
         });
@@ -200,36 +216,82 @@ const Game = ({navigation}) => {
     });
   };
 
+  // Star collection without immediate save
+  const handleStarCollection = (cloudId) => {
+    console.log('Star collected!');
+    setCollectedStars(prev => new Set([...prev, cloudId]));
+    setScore(prevScore => prevScore + 10);
+  };
+
+  // Save progress when level changes
+  useEffect(() => {
+    const saveLevelProgress = async () => {
+      if (currentLevel > 1 && score > 0) { // Only save if we've progressed past level 1
+        console.log('Saving progress for completed level:', {
+          currentLevel: currentLevel - 1, // Save for completed level
+          scoreToSave: score,
+        });
+        
+        try {
+          const newTotalScore = await saveGameProgress(score, currentLevel - 1);
+          console.log('Level progress saved successfully:', {
+            levelCompleted: currentLevel - 1,
+            scoreAdded: score,
+            newTotalScore,
+          });
+        } catch (error) {
+          console.error('Error saving level progress:', error);
+        }
+      }
+    };
+
+    saveLevelProgress();
+  }, [currentLevel]); // Trigger on level change
+
   // Check for level progression
   useEffect(() => {
     const maxLevel = Object.keys(LEVELS).length;
     if (cloudsGenerated >= levelSettings.clouds && currentLevel < maxLevel) {
-      console.log(
-        `Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`,
-      );
+      console.log(`Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`);
       setCurrentLevel(prev => Math.min(prev + 1, maxLevel));
       setCloudsGenerated(0);
     }
   }, [cloudsGenerated, currentLevel, levelSettings.clouds]);
 
-  // Save progress when game ends
+  // Game end handling
   const handleGameEnd = async () => {
     if (!gameEnded && isPlaying) {
       setIsPlaying(false);
       setGameEnded(true);
-      const newTotalScore = await saveGameProgress(score, currentLevel);
-      console.log('Game ended - Total Score:', newTotalScore);
       
-      Alert.alert(
-        'Game Over!',
-        `Level Reached: ${currentLevel}\nScore: ${score}\nTotal Score: ${newTotalScore}`,
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      // Save final level progress
+      console.log('Saving final game stats:', {
+        finalLevel: currentLevel,
+        finalScore: score,
+        totalScoreBeforeEnd: totalScore
+      });
+      
+      try {
+        const newTotalScore = await saveGameProgress(score, currentLevel);
+        console.log('Final game stats saved:', {
+          finalScore: score,
+          finalLevel: currentLevel,
+          newTotalScore
+        });
+        
+        Alert.alert(
+          'Game Over!',
+          `Level Reached: ${currentLevel}\nScore: ${score}\nTotal Score: ${newTotalScore}`,
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.goBack(),
+            },
+          ],
+        );
+      } catch (error) {
+        console.error('Error saving final game stats:', error);
+      }
     }
   };
 

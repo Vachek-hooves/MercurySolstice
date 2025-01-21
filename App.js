@@ -8,6 +8,7 @@ import LogIn from './screen/S/LogIn';
 import ActivityTimer from './screen/S/ActivityTimer';
 import DiaryDetails from './screen/S/DiaryDetails';
 import AddDiary from './screen/S/AddDiary';
+import {Game} from './screen/T';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ function App() {
           <Stack.Screen name="ActivityTimer" component={ActivityTimer} />
           <Stack.Screen name="DiaryDetails" component={DiaryDetails} />
           <Stack.Screen name="AddDiary" component={AddDiary} />
+          <Stack.Screen name="Game" component={Game} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>
