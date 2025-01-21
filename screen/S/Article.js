@@ -12,7 +12,7 @@ import {useAppContext} from '../../store/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Article = ({navigation}) => {
-  const {totalScore} = useAppContext();
+  const {totalScore, deductScore} = useAppContext();
   const SCORE_TO_UNLOCK = 1500;
   const [unlockedArticles, setUnlockedArticles] = useState(new Set());
 
@@ -41,7 +41,7 @@ const Article = ({navigation}) => {
   };
 
   const handleArticlePress = async (article, index) => {
-    const requiredScore = SCORE_TO_UNLOCK ;
+    const requiredScore = SCORE_TO_UNLOCK;
     
     console.log('Attempting to open article:', {
       articleId: article.id,
@@ -52,10 +52,20 @@ const Article = ({navigation}) => {
     
     if (totalScore >= requiredScore && !unlockedArticles.has(article.id)) {
       console.log('Unlocking article:', article.id);
+      
+      // Deduct score first
+      const newTotalScore = await deductScore(SCORE_TO_UNLOCK);
+      console.log('Score deducted:', {
+        deducted: SCORE_TO_UNLOCK,
+        newTotalScore
+      });
+
+      // Then unlock the article
       const newUnlockedArticles = new Set(unlockedArticles);
       newUnlockedArticles.add(article.id);
       setUnlockedArticles(newUnlockedArticles);
       await saveUnlockedArticles(newUnlockedArticles);
+      
       // Here you can add navigation to article detail screen
       // navigation.navigate('ArticleDetail', { article });
     } else if (unlockedArticles.has(article.id)) {
@@ -71,7 +81,7 @@ const Article = ({navigation}) => {
 
   const renderArticleBox = (article, index) => {
     const isUnlocked = unlockedArticles.has(article.id);
-    const requiredScore = SCORE_TO_UNLOCK ;
+    const requiredScore = SCORE_TO_UNLOCK;
     const canUnlock = totalScore >= requiredScore;
     
     return (

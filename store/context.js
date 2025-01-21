@@ -15,6 +15,7 @@ export const AppContext = createContext({
   highestLevel: 1,
   gamesPlayed: 0,
   saveGameProgress: async (score, level) => {},
+  deductScore: async (amount) => {},
 });
 
 export const AppProvider = ({children}) => {
@@ -197,12 +198,10 @@ export const AppProvider = ({children}) => {
       const newHighestLevel = Math.max(highestLevel, level);
       const newGamesPlayed = gamesPlayed + 1;
 
-      // Save to state
       setTotalScore(newTotalScore);
       setHighestLevel(newHighestLevel);
       setGamesPlayed(newGamesPlayed);
 
-      // Save to AsyncStorage
       await AsyncStorage.setItem(
         'gameProgress',
         JSON.stringify({
@@ -212,10 +211,32 @@ export const AppProvider = ({children}) => {
         }),
       );
 
-      return newTotalScore; // Return for immediate use
+      return newTotalScore;
     } catch (error) {
       console.error('Error saving game progress:', error);
-      return totalScore; // Return current total if save fails
+      return totalScore;
+    }
+  };
+
+  // Add new function to handle score deduction
+  const deductScore = async (amount) => {
+    try {
+      const newTotalScore = Math.max(0, totalScore - amount); // Prevent negative score
+      setTotalScore(newTotalScore);
+
+      await AsyncStorage.setItem(
+        'gameProgress',
+        JSON.stringify({
+          totalScore: newTotalScore,
+          highestLevel,
+          gamesPlayed,
+        }),
+      );
+
+      return newTotalScore;
+    } catch (error) {
+      console.error('Error deducting score:', error);
+      return totalScore;
     }
   };
 
@@ -233,6 +254,7 @@ export const AppProvider = ({children}) => {
     highestLevel,
     gamesPlayed,
     saveGameProgress,
+    deductScore,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
