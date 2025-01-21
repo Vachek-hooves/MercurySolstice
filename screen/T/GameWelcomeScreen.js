@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
+import CustomBtn from '../../components/ui/CustomBtnNav';
 
 const GameWelcomeScreen = ({navigation}) => {
   return (
@@ -23,11 +24,15 @@ const GameWelcomeScreen = ({navigation}) => {
       </Text>
 
       {/* Time to Shine Button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => navigation.navigate('Game')}
         style={styles.startButton}>
         <Text style={styles.buttonText}>Time to shine</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <CustomBtn
+        onPress={() => navigation.navigate('Game')}
+        title="Time to shine"
+      />
 
       {/* Radiance Depot Button */}
       <TouchableOpacity style={styles.depotButton}>
@@ -77,6 +82,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
+    marginVertical: 40,
   },
   depotButtonText: {
     color: '#FFFFFF',
