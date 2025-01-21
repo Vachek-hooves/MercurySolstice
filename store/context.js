@@ -15,8 +15,10 @@ export const AppContext = createContext({
   highestLevel: 1,
   gamesPlayed: 0,
   saveGameProgress: async (score, level) => {},
-  deductScore: async (amount) => {},
+  deductScore: async amount => {},
   resetGameProgress: async () => {},
+  isMusicEnable: () => {},
+  setIsMusicEnable: () => {},
 });
 
 export const AppProvider = ({children}) => {
@@ -25,6 +27,7 @@ export const AppProvider = ({children}) => {
   const [totalScore, setTotalScore] = useState(0);
   const [highestLevel, setHighestLevel] = useState(1);
   const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [isMusicEnable, setIsMusicEnable] = useState(true);
   console.log(totalScore, highestLevel, gamesPlayed);
 
   // Load all data when app starts
@@ -220,7 +223,7 @@ export const AppProvider = ({children}) => {
   };
 
   // Add new function to handle score deduction
-  const deductScore = async (amount) => {
+  const deductScore = async amount => {
     try {
       const newTotalScore = Math.max(0, totalScore - amount); // Prevent negative score
       setTotalScore(newTotalScore);
@@ -249,10 +252,7 @@ export const AppProvider = ({children}) => {
       setGamesPlayed(0);
 
       // Clear storage
-      await AsyncStorage.multiRemove([
-        'gameProgress',
-        'unlockedArticles'
-      ]);
+      await AsyncStorage.multiRemove(['gameProgress', 'unlockedArticles']);
 
       console.log('Game progress reset successfully');
     } catch (error) {
@@ -276,6 +276,8 @@ export const AppProvider = ({children}) => {
     saveGameProgress,
     deductScore,
     resetGameProgress,
+    isMusicEnable,
+    setIsMusicEnable,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

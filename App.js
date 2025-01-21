@@ -11,10 +11,45 @@ import AddDiary from './screen/S/AddDiary';
 import {Game} from './screen/T';
 import Article from './screen/S/Article';
 import ReadArticleDetails from './screen/S/ReadArticleDetails';
+import {
+  pauseBackgroundMusic,
+  playBackgroundMusic,
+  setupPlayer,
+} from './components/sound/SetSound';
+import {useAppContext} from './store/context';
+import {useState, useEffect} from 'react';
+import {AppState} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
+  const {isMusicEnable} = useAppContext();
+  const [isPlayMusic, setIsPlayMusic] = useState(false);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active' && isPlayMusic && isMusicEnable) {
+        playBackgroundMusic();
+      } else if (nextAppState === 'inactive' || nextAppState === 'background') {
+        pauseBackgroundMusic();
+      }
+    });
+
+    const initMusic = async () => {
+      await setupPlayer();
+      if (isMusicEnable) {
+        await playBackgroundMusic();
+        setIsPlayMusic(true);
+      }
+    };
+    initMusic();
+
+    return () => {
+      subscription.remove();
+      pauseBackgroundMusic();
+    };
+  }, [isMusicEnable]);
+
   return (
     <AppProvider>
       <NavigationContainer>

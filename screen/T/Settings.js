@@ -1,11 +1,23 @@
-import {StyleSheet, Text, View, Switch, Alert, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Switch,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import {useState} from 'react';
 import {useAppContext} from '../../store/context';
+import {
+  playBackgroundMusic,
+  pauseBackgroundMusic,
+} from '../../components/sound/SetSound';
 
 const Settings = () => {
-  const {resetGameProgress} = useAppContext();
-  const [isMusicEnable, setIsMusicEnable] = useState(true);
+  const {resetGameProgress, isMusicEnable, setIsMusicEnable} = useAppContext();
+  // const [isMusicEnable, setIsMusicEnable] = useState(true);
+  console.log(isMusicEnable);
 
   const handleMusicToggle = async value => {
     setIsMusicEnable(value);
