@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 40, // Adjust for status bar
+    paddingTop: 50, // Adjust for status bar
     paddingBottom: 10,
     zIndex: 1,
   },
