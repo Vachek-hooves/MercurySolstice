@@ -204,6 +204,8 @@ const Advice = () => {
         </View>
       </Modal>
       {/* </LinearGradient> */}
+
+      <View style={{height: 100}} />
     </MainLayout>
   );
 };
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
   },
   adviceContainer: {
     // flex: 1,
-    position: 'relative',
+    // position: 'relative',d
     height: '90%',
   },
   adviceButtonWrapper: {

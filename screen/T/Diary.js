@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import DiaryIcon from '../../components/icon/DiaryIcon';
@@ -23,13 +24,51 @@ const moods = [
   {id: 6, name: 'Sadness', image: require('../../assets/mood/sadness.png')},
 ];
 
+const MoodEmoji = ({mood, onPress}) => {
+  const swayAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(swayAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(swayAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, []);
+
+  const swayInterpolation = swayAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-5, 5], // Adjust these values to control sway distance
+  });
+
+  return (
+    <TouchableOpacity style={styles.moodItem} onPress={onPress}>
+      <Animated.View
+        style={{
+          transform: [{translateX: swayInterpolation}],
+        }}>
+        <Image source={mood.image} style={styles.moodEmoji} />
+      </Animated.View>
+      <Text style={styles.moodText}>{mood.name}</Text>
+    </TouchableOpacity>
+  );
+};
+
 const Diary = ({navigation}) => {
   const [selectedMood, setSelectedMood] = useState(null);
 
   const handleMoodSelection = mood => {
     console.log(mood);
-    setSelectedMood(mood);
-    navigation.navigate('AddDiary', {mood});
+    // setSelectedMood(mood);
+    // navigation.navigate('AddDiary', {mood});
   };
 
   const renderMoodGrid = () => {
@@ -37,25 +76,21 @@ const Diary = ({navigation}) => {
       <View style={styles.moodGrid}>
         <View style={styles.moodRow}>
           {moods.slice(0, 3).map(mood => (
-            <TouchableOpacity
+            <MoodEmoji
               key={mood.id}
-              style={styles.moodItem}
-              onPress={() => handleMoodSelection(mood)}>
-              <Image source={mood.image} style={styles.moodEmoji} />
-              <Text style={styles.moodText}>{mood.name}</Text>
-            </TouchableOpacity>
+              mood={mood}
+              onPress={() => handleMoodSelection(mood)}
+            />
           ))}
         </View>
         <View style={{borderWidth: 1, borderColor: '#91203E'}} />
         <View style={styles.moodRow}>
           {moods.slice(3, 6).map(mood => (
-            <TouchableOpacity
+            <MoodEmoji
               key={mood.id}
-              style={styles.moodItem}
-              onPress={() => handleMoodSelection(mood)}>
-              <Image source={mood.image} style={styles.moodEmoji} />
-              <Text style={styles.moodText}>{mood.name}</Text>
-            </TouchableOpacity>
+              mood={mood}
+              onPress={() => handleMoodSelection(mood)}
+            />
           ))}
         </View>
       </View>
@@ -68,25 +103,22 @@ const Diary = ({navigation}) => {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}>
         <DiaryIcon />
-        {/* <View style={styles.container}> */}
         <Text style={styles.title}>
           Please select one of the moods{'\n'}by tapping the corresponding
           emoji.
         </Text>
         {renderMoodGrid()}
-        {/* </View> */}
-        {/* <View style={{height:100}}/> */}
-        <View style={{height: 50}} />
       </ScrollView>
+      <View style={{height: 105}} />
     </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     paddingHorizontal: 20,
-    paddingTop: '40%',
+    paddingTop: '30%',
+    // height:'100%'
   },
   title: {
     fontSize: 24,

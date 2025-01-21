@@ -1,10 +1,18 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Vibration} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Vibration,
+  ScrollView,
+} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import MainLayout from '../../components/Layout/MainLayout';
 import CurrentDate from '../../components/ui/CurrentDate';
 import {useAppContext} from '../../store/context';
+import GoBack from '../../components/icon/GoBack';
 
 const ActivityTimer = ({route}) => {
   const {title} = route.params;
@@ -13,7 +21,7 @@ const ActivityTimer = ({route}) => {
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
   const progressRef = useRef();
   const timerRef = useRef(null);
-  
+
   // Get context functions
   const {saveTimer, timerHistory} = useAppContext();
 
@@ -36,12 +44,12 @@ const ActivityTimer = ({route}) => {
       if (completedDuration > 0) {
         // Vibrate when timer completes
         Vibration.vibrate([0, 500, 200, 500]); // Pattern: wait 0ms, vibrate 500ms, wait 200ms, vibrate 500ms
-        
+
         await saveTimer(title, completedDuration);
         console.log('Timer saved successfully:', {
           title,
           duration: completedDuration,
-          history: timerHistory[title]
+          history: timerHistory[title],
         });
       }
     } catch (error) {
@@ -98,7 +106,10 @@ const ActivityTimer = ({route}) => {
 
   return (
     <MainLayout>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={{paddingTop: '15%'}}
+        showsVerticalScrollIndicator={false}>
+        {/* <View style={styles.container}> */}
         <View style={styles.dateWrapper}>
           <CurrentDate />
         </View>
@@ -152,7 +163,10 @@ const ActivityTimer = ({route}) => {
           </View>
           {/* </LinearGradient> */}
         </View>
-      </View>
+        {/* </View> */}
+      </ScrollView>
+      <GoBack />
+      <View style={{margin: 60}} />
     </MainLayout>
   );
 };
@@ -165,10 +179,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dateWrapper: {
-    position: 'absolute',
-    top: 70,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // top: 70,
+    // left: 0,
+    // right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     zIndex: 1,
@@ -188,12 +202,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   titleContainer: {
-    top: -25,
+    // top: -25,
     zIndex: 1,
+    marginVertical: 20,
   },
   titleButton: {
     // borderRadius: 25,
-    width: '40%',
+    width: '45%',
     borderTopEndRadius: 25,
     borderBottomEndRadius: 25,
   },
