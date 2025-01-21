@@ -99,7 +99,7 @@ const Game = () => {
   const checkStarCollision = (sunX, sunY, starX, starY) => {
     // Much larger vertical hit box for better collection at all heights
     const horizontalHitDistance = 100;
-    const verticalHitDistance = 170; // Increased vertical hit distance
+    const verticalHitDistance = 180; // Increased vertical hit distance
     
     const xDiff = Math.abs(sunX - starX);
     const yDiff = Math.abs(sunY - starY);
