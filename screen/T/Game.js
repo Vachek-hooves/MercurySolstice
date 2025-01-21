@@ -9,8 +9,7 @@ import {
   Animated,
   Alert,
 } from 'react-native';
-import MainLayout from '../../components/Layout/MainLayout';
-import LinearGradient from 'react-native-linear-gradient';
+
 import {useAppContext} from '../../store/context';
 import GoBack from '../../components/icon/GoBack';
 
@@ -30,12 +29,14 @@ const LEVELS = {
 };
 
 const CLOUD_WIDTH = 120;
-const JUMP_HEIGHT = 400;
+const JUMP_HEIGHT = 420;
 const GRAVITY = 2;
 const SUN_SIZE = 70;
 const STAR_SIZE = 50;
-const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 720; // Higher position for clouds
-const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 550;
+const MIN_CLOUD_HEIGHT = SCREEN_HEIGHT - 650; // Higher position for clouds
+const MAX_CLOUD_HEIGHT = SCREEN_HEIGHT - 450;
+console.log(MIN_CLOUD_HEIGHT, 'MIN_CLOUD_HEIGHT');
+console.log(MAX_CLOUD_HEIGHT, 'MAX_CLOUD_HEIGHT');
 
 const Game = ({navigation}) => {
   const {saveGameProgress, totalScore} = useAppContext();
@@ -120,7 +121,7 @@ const Game = ({navigation}) => {
 
   const checkStarCollision = (sunX, sunY, starX, starY) => {
     // Much larger vertical hit box for better collection at all heights
-    const horizontalHitDistance = 100;
+    const horizontalHitDistance = 60;
     const verticalHitDistance = 180; // Increased vertical hit distance
 
     const xDiff = Math.abs(sunX - starX);
@@ -185,7 +186,7 @@ const Game = ({navigation}) => {
       // Apply gravity if not jumping
       if (!isJumping.current) {
         sunPosition.y.setValue(
-          Math.min(sunPosition.y._value + GRAVITY, SCREEN_HEIGHT - 400),
+          Math.min(sunPosition.y._value + GRAVITY, SCREEN_HEIGHT - 300),
         );
       }
 
@@ -467,7 +468,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    paddingBottom: 20,
+    // paddingBottom: 20,
   },
   jumpButton: {
     width: 80,
