@@ -12,6 +12,7 @@ import {
 import MainLayout from '../../components/Layout/MainLayout';
 import LinearGradient from 'react-native-linear-gradient';
 import {useAppContext} from '../../store/context';
+import GoBack from '../../components/icon/GoBack';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -217,7 +218,7 @@ const Game = ({navigation}) => {
   };
 
   // Star collection without immediate save
-  const handleStarCollection = (cloudId) => {
+  const handleStarCollection = cloudId => {
     console.log('Star collected!');
     setCollectedStars(prev => new Set([...prev, cloudId]));
     setScore(prevScore => prevScore + 10);
@@ -226,12 +227,13 @@ const Game = ({navigation}) => {
   // Save progress when level changes
   useEffect(() => {
     const saveLevelProgress = async () => {
-      if (currentLevel > 1 && score > 0) { // Only save if we've progressed past level 1
+      if (currentLevel > 1 && score > 0) {
+        // Only save if we've progressed past level 1
         console.log('Saving progress for completed level:', {
           currentLevel: currentLevel - 1, // Save for completed level
           scoreToSave: score,
         });
-        
+
         try {
           const newTotalScore = await saveGameProgress(score, currentLevel - 1);
           console.log('Level progress saved successfully:', {
@@ -252,7 +254,9 @@ const Game = ({navigation}) => {
   useEffect(() => {
     const maxLevel = Object.keys(LEVELS).length;
     if (cloudsGenerated >= levelSettings.clouds && currentLevel < maxLevel) {
-      console.log(`Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`);
+      console.log(
+        `Level ${currentLevel} completed! Clouds generated: ${cloudsGenerated}`,
+      );
       setCurrentLevel(prev => Math.min(prev + 1, maxLevel));
       setCloudsGenerated(0);
     }
@@ -263,22 +267,22 @@ const Game = ({navigation}) => {
     if (!gameEnded && isPlaying) {
       setIsPlaying(false);
       setGameEnded(true);
-      
+
       // Save final level progress
       console.log('Saving final game stats:', {
         finalLevel: currentLevel,
         finalScore: score,
-        totalScoreBeforeEnd: totalScore
+        totalScoreBeforeEnd: totalScore,
       });
-      
+
       try {
         const newTotalScore = await saveGameProgress(score, currentLevel);
         console.log('Final game stats saved:', {
           finalScore: score,
           finalLevel: currentLevel,
-          newTotalScore
+          newTotalScore,
         });
-        
+
         Alert.alert(
           'Game Over!',
           `Level Reached: ${currentLevel}\nScore: ${score}\nTotal Score: ${newTotalScore}`,
@@ -376,6 +380,7 @@ const Game = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
+      <GoBack />
     </View>
     // </MainLayout>
   );
@@ -467,7 +472,7 @@ const styles = StyleSheet.create({
   jumpButton: {
     width: 80,
     height: 80,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
