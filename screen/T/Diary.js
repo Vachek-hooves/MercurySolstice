@@ -67,8 +67,8 @@ const Diary = ({navigation}) => {
 
   const handleMoodSelection = mood => {
     console.log(mood);
-    // setSelectedMood(mood);
-    // navigation.navigate('AddDiary', {mood});
+    setSelectedMood(mood);
+    navigation.navigate('AddDiary', {mood});
   };
 
   const renderMoodGrid = () => {
