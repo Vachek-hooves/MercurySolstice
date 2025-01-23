@@ -10,6 +10,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import LinearGradient from 'react-native-linear-gradient';
@@ -48,10 +49,11 @@ const AddDiary = ({route, navigation}) => {
 
   return (
     <MainLayout>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>
           <Image source={mood.image} style={styles.moodEmoji} />
 
           <Text style={styles.title}>{recommendation}</Text>
@@ -76,11 +78,12 @@ const AddDiary = ({route, navigation}) => {
               colors={['#91203E', '#691B3B']}
               style={styles.addButton}>
               <Text style={styles.buttonText}>Add to diary</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+              </LinearGradient>
+            </TouchableOpacity>
+          </ScrollView>
           <GoBack />
         </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+      {/* </TouchableWithoutFeedback> */}
     </MainLayout>
   );
 };
