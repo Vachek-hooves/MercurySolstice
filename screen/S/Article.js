@@ -10,6 +10,7 @@ import {
 import {articlesData} from '../../data/articlesData';
 import {useAppContext} from '../../store/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GoBack from '../../components/icon/GoBack';
 
 const Article = ({navigation}) => {
   const {totalScore, deductScore} = useAppContext();
@@ -142,13 +143,16 @@ const Article = ({navigation}) => {
       </View>
 
       {/* Articles Grid */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.articlesGrid}>
           {articlesData.map((article, index) =>
             renderArticleBox(article, index),
           )}
         </View>
+        <View style={{height: 70}} />
       </ScrollView>
+      <View style={{height: 120}} />
+      <GoBack />
     </View>
   );
 };
