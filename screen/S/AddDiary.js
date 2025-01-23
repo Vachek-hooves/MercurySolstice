@@ -6,6 +6,10 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import MainLayout from '../../components/Layout/MainLayout';
 import LinearGradient from 'react-native-linear-gradient';
@@ -32,6 +36,7 @@ const AddDiary = ({route, navigation}) => {
         const success = await saveDiaryEntry(mood, diaryText.trim());
         if (success) {
           console.log('Diary entry saved successfully');
+          Keyboard.dismiss();
           navigation.goBack();
         }
       } catch (error) {
@@ -43,32 +48,39 @@ const AddDiary = ({route, navigation}) => {
 
   return (
     <MainLayout>
-      <View style={styles.container}>
-        <Image source={mood.image} style={styles.moodEmoji} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}>
+          <Image source={mood.image} style={styles.moodEmoji} />
 
-        <Text style={styles.title}>{recommendation}</Text>
+          <Text style={styles.title}>{recommendation}</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            multiline
-            numberOfLines={4}
-            placeholder="Why do I feel this way today?..."
-            placeholderTextColor="#666"
-            value={diaryText}
-            onChangeText={setDiaryText}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              multiline
+              numberOfLines={4}
+              placeholder="Why do I feel this way today?..."
+              placeholderTextColor="#666"
+              value={diaryText}
+              onChangeText={setDiaryText}
+              returnKeyType="done"
+              blurOnSubmit={true}
+              onSubmitEditing={Keyboard.dismiss}
+            />
+          </View>
 
-        <TouchableOpacity onPress={handleAddToDiary}>
-          <LinearGradient
-            colors={['#91203E', '#691B3B']}
-            style={styles.addButton}>
-            <Text style={styles.buttonText}>Add to diary</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-      <GoBack />
+          <TouchableOpacity onPress={handleAddToDiary}>
+            <LinearGradient
+              colors={['#91203E', '#691B3B']}
+              style={styles.addButton}>
+              <Text style={styles.buttonText}>Add to diary</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <GoBack />
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </MainLayout>
   );
 };

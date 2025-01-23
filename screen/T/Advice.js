@@ -291,8 +291,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    height: '55%',
+    // height: '60%',
     width: '85%',
+    
   },
   modalTitle: {
     fontSize: 24,

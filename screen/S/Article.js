@@ -182,10 +182,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 30,
+    gap: 20,
   },
   articleBox: {
-    width: '46%',
+    width: '43%',
     aspectRatio: 1,
     backgroundColor: '#1E4B8C',
     borderRadius: 16,
