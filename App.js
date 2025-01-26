@@ -19,6 +19,7 @@ import {
 import {useAppContext} from './store/context';
 import {useState, useEffect} from 'react';
 import {AppState} from 'react-native';
+import About from './screen/S/About';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,7 @@ function App() {
             name="ReadArticleDetails"
             component={ReadArticleDetails}
           />
+          <Stack.Screen name="About" component={About} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>

@@ -31,6 +31,7 @@ const GameWelcomeScreen = ({navigation}) => {
           onPress={() => navigation.navigate('Game')}
           title="Time to shine"
         />
+        <CustomBtn onPress={() => navigation.navigate('About')} title="About" />
 
         {/* Radiance Depot Button */}
         <ReadArticleBtn />

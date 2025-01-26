@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
       shadowOpacity: 1.0,
       shadowRadius: 9.9,
     },
+    minWidth: 240,
   },
   buttonText: {
     paddingVertical: 16,
